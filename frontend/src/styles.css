@@ -1,0 +1,291 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * NekoAPI design system — technical, compact, developer-tool aesthetic.
+ * Neutral graphite surfaces + one warm amber accent. 4px radius, 1px hairlines.
+ */
+
+@theme inline {
+  --font-sans: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, monospace;
+
+  --radius-sm: 3px;
+  --radius-md: 4px;
+  --radius-lg: 6px;
+  --radius-xl: 8px;
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-card: var(--surface);
+  --color-card-foreground: var(--foreground);
+  --color-popover: var(--surface);
+  --color-popover-foreground: var(--foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--surface-2);
+  --color-secondary-foreground: var(--foreground);
+  --color-muted: var(--surface-2);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--danger);
+  --color-destructive-foreground: var(--primary-foreground);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-input: var(--border);
+  --color-ring: var(--ring);
+  --color-ok: var(--ok);
+  --color-warn: var(--warn);
+  --color-danger: var(--danger);
+  --color-info: var(--info);
+  --color-get: var(--method-get);
+  --color-post: var(--method-post);
+}
+
+:root {
+  --background: oklch(0.985 0.004 90);
+  --foreground: oklch(0.22 0.012 260);
+  --surface: oklch(1 0 0);
+  --surface-2: oklch(0.965 0.005 90);
+  --muted-foreground: oklch(0.52 0.014 260);
+  --border: oklch(0.9 0.006 260);
+  --border-strong: oklch(0.82 0.01 260);
+  --primary: oklch(0.28 0.015 260);
+  --primary-foreground: oklch(0.99 0.003 90);
+  --accent: oklch(0.68 0.15 55);
+  --accent-foreground: oklch(0.18 0.02 55);
+  --ring: oklch(0.68 0.15 55);
+  --ok: oklch(0.6 0.13 155);
+  --warn: oklch(0.72 0.14 75);
+  --danger: oklch(0.58 0.19 25);
+  --info: oklch(0.6 0.1 240);
+  --method-get: oklch(0.58 0.11 200);
+  --method-post: oklch(0.6 0.14 145);
+}
+
+.dark {
+  --background: oklch(0.17 0.008 260);
+  --foreground: oklch(0.93 0.005 90);
+  --surface: oklch(0.21 0.009 260);
+  --surface-2: oklch(0.25 0.01 260);
+  --muted-foreground: oklch(0.66 0.012 260);
+  --border: oklch(0.3 0.012 260);
+  --border-strong: oklch(0.38 0.014 260);
+  --primary: oklch(0.93 0.005 90);
+  --primary-foreground: oklch(0.19 0.01 260);
+  --accent: oklch(0.76 0.14 62);
+  --accent-foreground: oklch(0.19 0.02 62);
+  --ring: oklch(0.76 0.14 62);
+  --ok: oklch(0.72 0.14 158);
+  --warn: oklch(0.79 0.14 78);
+  --danger: oklch(0.66 0.17 25);
+  --info: oklch(0.7 0.1 240);
+  --method-get: oklch(0.72 0.1 205);
+  --method-post: oklch(0.74 0.13 148);
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    font-feature-settings: "cv05", "ss01";
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection {
+    background: color-mix(in oklab, var(--accent) 35%, transparent);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--border-strong);
+    border-radius: 8px;
+    border: 3px solid transparent;
+    background-clip: content-box;
+  }
+}
+
+/* ---------- NekoAPI component utilities ---------- */
+
+@utility neko-panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+}
+
+@utility neko-grid-bg {
+  background-image:
+    linear-gradient(to right, color-mix(in oklab, var(--border) 60%, transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in oklab, var(--border) 60%, transparent) 1px, transparent 1px);
+  background-size: 28px 28px;
+  mask-image: radial-gradient(ellipse 90% 60% at 50% 0%, black, transparent 75%);
+}
+
+@utility neko-label {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+}
+
+@utility neko-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-strong);
+  background: var(--surface);
+  color: var(--foreground);
+  padding: 0.5rem 0.75rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  line-height: 1;
+  min-height: 2.25rem;
+  transition:
+    background-color 120ms ease,
+    border-color 120ms ease,
+    transform 100ms ease;
+
+  &:hover {
+    background: var(--surface-2);
+    border-color: var(--accent);
+  }
+  &:active {
+    transform: translateY(1px);
+  }
+  &:disabled {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+}
+
+@utility neko-btn-accent {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-foreground);
+
+  &:hover {
+    background: color-mix(in oklab, var(--accent) 88%, black);
+    border-color: color-mix(in oklab, var(--accent) 88%, black);
+  }
+}
+
+@utility neko-input {
+  width: 100%;
+  border: 1px solid var(--border);
+  background: var(--background);
+  border-radius: var(--radius-md);
+  padding: 0.5rem 0.625rem;
+  font-size: 0.8125rem;
+  font-family: var(--font-mono);
+  color: var(--foreground);
+  min-height: 2.25rem;
+
+  &::placeholder {
+    color: color-mix(in oklab, var(--muted-foreground) 75%, transparent);
+  }
+  &:focus {
+    border-color: var(--accent);
+  }
+}
+
+@utility neko-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+  padding: 0.125rem 0.4rem;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.02em;
+}
+
+@utility neko-scroll-x {
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+@keyframes neko-pulse-dot {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.45;
+    transform: scale(0.82);
+  }
+}
+
+@utility neko-live {
+  animation: neko-pulse-dot 2s ease-in-out infinite;
+}
+
+@keyframes neko-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@utility neko-enter {
+  animation: neko-fade-up 180ms ease-out both;
+}
+
+@keyframes neko-shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@utility neko-skeleton {
+  position: relative;
+  overflow: hidden;
+  background: var(--surface-2);
+  border-radius: var(--radius-sm);
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background: linear-gradient(
+      90deg,
+      transparent,
+      color-mix(in oklab, var(--foreground) 8%, transparent),
+      transparent
+    );
+    animation: neko-shimmer 1.4s infinite;
+  }
+}

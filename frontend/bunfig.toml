@@ -1,0 +1,7 @@
+[install]
+saveTextLockfile = true
+# 24h supply-chain guard: skip package versions published less than a day ago.
+minimumReleaseAge = 86400
+# Add package names here to bypass the 24h guard for a specific dependency —
+# confirm with the user before adding any.
+minimumReleaseAgeExcludes = []
