@@ -10,10 +10,11 @@ backend built in the same one-file-per-endpoint style as Takanashi-API.
 
 ```
 nekoapi/
+├── vercel.json                 Deploys frontend/ + backend/ together as one Vercel project (Services)
 ├── frontend/                   React + TypeScript + Tailwind dashboard (TanStack Start)
 │   ├── src/
 │   │   ├── config.js            branding/metadata — name, owner, URL, favicon, hero image (not a secret, edit directly)
-│   │   ├── api/                bundled edge API (workers runtime) — mirrors backend/ for Vercel deployments
+│   │   ├── api/                bundled edge API (workers runtime) — parallel fallback, see README step 8
 │   │   │   ├── core/           respond, state, device, ratelimit, registry, zip
 │   │   │   ├── handlers/       general, media, ops, ai, downloader, search
 │   │   │   └── telegram/       Telegram connector (internal notifier)
@@ -21,10 +22,9 @@ nekoapi/
 │   │   ├── lib/                site config, announcement config, API client
 │   │   └── routes/             pages + workers routes (src/routes/api/public/$.ts)
 │   ├── public/                 favicon.ico, robots.txt
-│   ├── vercel.json             Vercel deployment configuration
 │   ├── package.json / vite.config.ts / tsconfig.json
 │   └── .env.example
-├── backend/                    Node.js backend (VPS / server) — the only backend
+├── backend/                    Node.js/Express backend — the primary API implementation
 │   ├── index.js                 Express app: middleware, auto-loader, error handling
 │   ├── src/
 │   │   ├── branding.js          non-secret site metadata (mirrors frontend/src/config.js)
@@ -39,7 +39,8 @@ nekoapi/
 Note on structure: this project has two runnable API implementations. The
 `workers` layer lives inside the frontend (`frontend/src/routes/api/public/$.ts`
 + `frontend/src/api/*`) because the edge runtime requires it there, and
-`backend/` is the server implementation, meant to run on a VPS. Both
+`backend/` is the primary implementation — deployable either as part of the
+same Vercel project (see step 6) or standalone on a VPS (see step 7). Both
 implement the exact same routes and response envelope, so the frontend works
 identically against either one.
 
@@ -130,19 +131,53 @@ cd frontend && npm run build       # output in .output/
 cd ../backend && npm install --omit=dev   # no build step — Node runs the source directly
 ```
 
-## 6. Deploy the frontend to Vercel
+## 6. Deploy everything to Vercel as one project (recommended)
 
-1. Import the repository in Vercel and set **Root Directory** to `frontend`.
-2. `vercel.json` already declares the build command, output directory and
-   security headers — no further configuration is needed.
-3. Add the environment variables in Vercel → Settings → Environment Variables:
-   `VITE_API_BASE_URL` (only if the frontend calls an external Node backend —
-   leave unset to use the bundled edge API on the same origin). Branding
-   comes from `frontend/src/config.js`, committed in the repo, no Vercel env
-   var needed for it.
+The root `vercel.json` deploys the frontend and the backend together, on one
+domain, using [Vercel Services](https://vercel.com/docs/services):
+
+- `frontend/` is served at `/` (and `/api/public/*` for the bundled edge API,
+  unused by default — see step 8).
+- `backend/` (the Node/Express backend) is served at `/api/*`.
+
+Steps:
+
+1. Import the repository in Vercel. **Leave Root Directory empty/`.`** — do
+   not point it at `frontend` or `backend`. The root `vercel.json` is what
+   tells Vercel about both services.
+2. If the dashboard shows a single "Framework Preset" instead of picking up
+   `services` automatically, set the **Framework Preset** to **Other** and
+   redeploy — the `services` key in `vercel.json` takes over from there.
+3. Add environment variables in Vercel → Settings → Environment Variables.
+   You generally need none for this setup — the frontend's default API base
+   is same-origin `/api`, which the root `vercel.json` already routes to the
+   `backend` service. Add `ALLOWED_ORIGINS` only if you also plan to call
+   the API from a different domain, and `TELEGRAM_BOT_TOKEN` if you want the
+   Telegram notifier working. Branding comes from `frontend/src/config.js`
+   and `backend/src/branding.js`, both committed in the repo.
 4. Deploy.
 
-## 7. Deploy the backend to a server
+Once deployed, `https://your-project.vercel.app/` serves the dashboard and
+`https://your-project.vercel.app/api/ping` hits the real Node backend —
+same domain, no CORS setup, no second project.
+
+## 7. Alternative: deploy the frontend and backend as separate projects
+
+Prefer two independent deployments (e.g. frontend on Vercel, backend on a
+VPS you control)? Skip the root `vercel.json` approach above and deploy each
+folder on its own:
+
+### Frontend only, on Vercel
+
+1. Import the repository in Vercel and set **Root Directory** to `frontend`.
+2. Framework auto-detects (Vite/TanStack Start) — no `vercel.json` is needed
+   for the frontend alone; `outputDirectory` defaults to `dist/client`.
+3. Set `VITE_API_BASE_URL=https://api.your-domain.com` to point at the
+   external backend from step below. Leaving it unset falls back to
+   same-origin `/api`, which won't exist without the backend deployed
+   alongside it (see step 6 instead, in that case).
+
+### Backend on a server (VPS)
 
 ```sh
 rsync -a --exclude node_modules backend/ user@server:/opt/nekoapi/
@@ -170,12 +205,23 @@ Put it behind nginx/Caddy with TLS on `api.your-domain.com`. A process
 manager like `pm2` works too if you'd rather not write a systemd unit:
 `pm2 start index.js --name nekoapi`.
 
-## 8. Point the frontend at an external backend
-
-Set `VITE_API_BASE_URL=https://api.your-domain.com` in the frontend
-environment and add that frontend origin to the backend `ALLOWED_ORIGINS`.
-Leaving `VITE_API_BASE_URL` empty keeps the bundled edge API on the same origin.
+Then set `VITE_API_BASE_URL=https://api.your-domain.com` in the frontend
+environment and add that frontend origin to the backend's `ALLOWED_ORIGINS`.
 The current target is always visible on the Settings page.
+
+## 8. About the bundled edge API (/api/public)
+
+`frontend/src/routes/api/public/$.ts` is a second, parallel implementation
+of the same endpoints, written in TypeScript and running as part of the
+frontend's own server functions (no Express, no separate deployment). It
+exists so the frontend still works if you deploy `frontend/` alone with no
+backend at all — useful for quick previews.
+
+It is **not** the default in this project: `apiBase()` in
+`frontend/src/lib/site-config.ts` points at same-origin `/api` (the Node
+backend) unless you're intentionally using this fallback. To use the edge
+API instead of the Node backend, change that default or call
+`/api/public/<endpoint>` directly.
 
 ## 9. Change the favicon
 
@@ -261,7 +307,9 @@ file that calls it — nothing else in the codebase depends on it.
 
 ## Customizing the homepage image and the popup
 
-Both are config-driven — no component code needs editing:
+Both are config-driven — no component code needs editing. Neither image
+ships in this repo on purpose (they need to be yours); see
+`frontend/public/README-images.md` for exactly where to drop them.
 
 - **Homepage "About" image**: set `heroImage: "/hero.jpg"` in
   `frontend/src/config.js` (or any absolute URL) and drop the file into

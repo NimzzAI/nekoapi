@@ -21,7 +21,7 @@ const ENV_VARS = [
   {
     name: "VITE_API_BASE_URL",
     scope: "frontend",
-    detail: "Point the dashboard at an external Node backend. Empty means the bundled API on this origin.",
+    detail: "Only needed if the Node backend is on a different domain. Empty means same-origin /api, which the root vercel.json already routes to the backend service.",
   },
   {
     name: "TELEGRAM_BOT_TOKEN",

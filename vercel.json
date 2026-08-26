@@ -1,0 +1,33 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "services": {
+    "frontend": {
+      "root": "frontend/",
+      "buildCommand": "npm run build",
+      "outputDirectory": "dist/client",
+      "installCommand": "npm install",
+      "headers": [
+        {
+          "source": "/(.*)",
+          "headers": [
+            { "key": "x-content-type-options", "value": "nosniff" },
+            { "key": "x-frame-options", "value": "DENY" },
+            { "key": "referrer-policy", "value": "no-referrer" },
+            { "key": "permissions-policy", "value": "camera=(), microphone=(), geolocation=()" }
+          ]
+        }
+      ]
+    },
+    "backend": {
+      "root": "backend/",
+      "framework": "express",
+      "entrypoint": "index.js",
+      "installCommand": "npm install"
+    }
+  },
+  "rewrites": [
+    { "source": "/api/public/(.*)", "destination": { "service": "frontend" } },
+    { "source": "/api/(.*)", "destination": { "service": "backend" } },
+    { "source": "/(.*)", "destination": { "service": "frontend" } }
+  ]
+}

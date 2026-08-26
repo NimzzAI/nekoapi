@@ -2,8 +2,27 @@
 
 Express backend structured the same way as Takanashi-API: **one file per
 endpoint**, auto-loaded from `src/api/<category>/` at boot. See the root
-`README.md` for the full setup guide — this file is a quick reference for
-working inside this folder specifically.
+`README.md` for the full setup guide (including how this deploys as part of
+one Vercel project via `../vercel.json`) — this file is a quick reference
+for working inside this folder specifically.
+
+## Deployment
+
+This backend runs in two environments without any code changes:
+
+- **As a Vercel Service** (recommended, see root `README.md` step 6): the
+  root `vercel.json` mounts this folder at `/api` in the same Vercel project
+  as the frontend. `module.exports = app` at the bottom of `index.js` is
+  what Vercel's Express framework detection uses.
+- **As a standalone VPS process** (see root `README.md` step 7): `npm start`
+  runs `index.js` directly, which calls `app.listen()` and binds `PORT`.
+
+`index.js` checks `process.env.VERCEL` to decide whether to call
+`app.listen()` — set automatically by Vercel, so no configuration is needed
+either way. It also strips a leading `/api` prefix from every incoming
+request before route matching, since Vercel Services keeps that prefix on
+the request but every route file below registers its path without it
+(`app.get("/ping", ...)`, not `app.get("/api/ping", ...)`).
 
 ## Run it
 

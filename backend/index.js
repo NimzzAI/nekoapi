@@ -34,6 +34,18 @@ app.enable("trust proxy");
 app.use(express.json({ limit: "2mb" }));
 app.use(express.urlencoded({ extended: false }));
 
+// When deployed as a Vercel Service under routePrefix "/api" (see the root
+// vercel.json), incoming requests keep that prefix — Express sees
+// "/api/ping" instead of "/ping". Every route file below registers its
+// path without the prefix (app.get("/ping", ...)), so strip it here, once,
+// before any route matching happens. A no-op locally and on a plain VPS.
+app.use((req, res, next) => {
+  if (req.url === "/api" || req.url.startsWith("/api/")) {
+    req.url = req.url.slice(4) || "/";
+  }
+  next();
+});
+
 app.use(
   cors({
     origin(origin, callback) {
@@ -128,8 +140,16 @@ app.use((err, req, res, _next) => {
   fail(res, "INTERNAL", "Something went wrong");
 });
 
-app.listen(PORT, () => {
-  console.log(`[nekoapi] listening on :${PORT}`);
-});
+// On Vercel, @vercel/node imports this file as a module and calls the
+// exported handler per-request — it never runs index.js as a standalone
+// process, so app.listen() would just hold an unused port open. On a VPS
+// (npm start / pm2 / systemd) this is a real long-running process and
+// needs the listener. VERCEL is set automatically in Vercel's build and
+// runtime environment, so this needs no extra configuration either way.
+if (!process.env.VERCEL) {
+  app.listen(PORT, () => {
+    console.log(`[nekoapi] listening on :${PORT}`);
+  });
+}
 
 module.exports = app;

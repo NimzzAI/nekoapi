@@ -1,9 +1,12 @@
 import { siteConfig } from "./site-config";
 
-/** Public API prefix. Same-origin by default, external (VPS/Node backend) when configured. */
-export const API_PREFIX = siteConfig.apiBaseUrl
-  ? `${siteConfig.apiBaseUrl}`
-  : "/api/public";
+/**
+ * Public API prefix. Empty VITE_API_BASE_URL means same-origin, and on this
+ * deployment same-origin /api routes to the Node/Express backend service
+ * (see the root vercel.json). Set VITE_API_BASE_URL only when the backend
+ * is on a different domain entirely.
+ */
+export const API_PREFIX = siteConfig.apiBaseUrl ? `${siteConfig.apiBaseUrl}` : "/api";
 
 export type ApiEnvelope<T> = {
   success: boolean;

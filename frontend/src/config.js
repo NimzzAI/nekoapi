@@ -15,6 +15,8 @@ export const siteConfig = {
   description:
     "NekoAPI is a free, open API service providing AI, downloader and search endpoints for your development needs.",
   owner: "Nimzz",
+  // TODO: replace with your real Vercel domain once you have it, e.g.
+  // "https://your-project.vercel.app" or your custom domain.
   url: "https://nekoapi.dev",
   favicon: "/favicon.ico",
   /** Homepage "About" illustration. Any absolute URL or /public path. Hidden automatically if missing — never renders as a broken-image icon. */

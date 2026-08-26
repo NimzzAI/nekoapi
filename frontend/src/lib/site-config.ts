@@ -19,7 +19,12 @@ export const siteConfig = {
 export const absoluteUrl = (path: string) =>
   `${siteConfig.url}${path.startsWith("/") ? path : `/${path}`}`;
 
-/** Displayable API base: external Node backend when configured, else same origin. */
+/**
+ * Displayable API base. Empty VITE_API_BASE_URL means same-origin — and on
+ * this deployment, same-origin under /api routes to the Node/Express
+ * backend service (see the root vercel.json). Only set VITE_API_BASE_URL
+ * when the backend lives on a genuinely different domain.
+ */
 export const apiBase = () =>
   siteConfig.apiBaseUrl ||
-  (typeof window === "undefined" ? "/api/public" : `${window.location.origin}/api/public`);
+  (typeof window === "undefined" ? "/api" : `${window.location.origin}/api`);
