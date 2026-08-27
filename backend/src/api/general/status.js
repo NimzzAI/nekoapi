@@ -1,7 +1,7 @@
-const { ok } = require("../../lib/respond");
-const branding = require("../../branding");
+import { ok } from "../../lib/respond.js";
+import branding from "../../branding.js";
 
-module.exports = function (app) {
+export default function (app) {
   app.get("/status", (req, res) => {
     const s = req.app.locals.store.snapshot();
     const telegram = req.app.locals.telegram.configured() ? "configured" : "unconfigured";
@@ -16,4 +16,4 @@ module.exports = function (app) {
       owner: branding.owner,
     });
   });
-};
+}

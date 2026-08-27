@@ -1,7 +1,7 @@
-const crypto = require("crypto");
-const { fail } = require("../../lib/respond");
+import crypto from "crypto";
+import { fail } from "../../lib/respond.js";
 
-module.exports = function (app) {
+export default function (app) {
   app.get("/image/avatar", (req, res) => {
     let seed = (req.query.seed || "").toString().trim();
     if (!seed) seed = "neko";
@@ -37,4 +37,4 @@ module.exports = function (app) {
     res.setHeader("cache-control", "public, max-age=86400");
     res.send(svg);
   });
-};
+}

@@ -1,12 +1,7 @@
-/**
- * GET /search/anime — anime title search via the official free Jikan API
- * (api.jikan.moe/v4), structured JSON, no key, more stable than scraping
- * MyAnimeList HTML directly.
- */
-const { getJSON } = require("../../lib/http");
-const { ok, fail } = require("../../lib/respond");
+import { getJSON } from "../../lib/http.js";
+import { ok, fail } from "../../lib/respond.js";
 
-module.exports = function (app) {
+export default function (app) {
   app.get("/search/anime", async (req, res) => {
     const q = req.query.q;
     if (!q || !String(q).trim()) return fail(res, "BAD_REQUEST", "q is required");
@@ -27,4 +22,4 @@ module.exports = function (app) {
       fail(res, "UPSTREAM_ERROR", "anime search upstream did not respond");
     }
   });
-};
+}

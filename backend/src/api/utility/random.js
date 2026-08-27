@@ -1,5 +1,5 @@
-const crypto = require("crypto");
-const { ok, fail } = require("../../lib/respond");
+import crypto from "crypto";
+import { ok, fail } from "../../lib/respond.js";
 
 const ALPHABET = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
@@ -7,7 +7,7 @@ function uuidV4() {
   return crypto.randomUUID();
 }
 
-module.exports = function (app) {
+export default function (app) {
   app.get("/random", (req, res) => {
     const kind = req.query.type || "uuid";
 
@@ -41,4 +41,4 @@ module.exports = function (app) {
 
     return fail(res, "BAD_REQUEST", "type must be one of uuid|int|bytes|string");
   });
-};
+}

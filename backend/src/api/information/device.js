@@ -1,7 +1,7 @@
-const { ok } = require("../../lib/respond");
-const { deviceID, coarseClient } = require("../../lib/security");
+import { ok } from "../../lib/respond.js";
+import { deviceID, coarseClient } from "../../lib/security.js";
 
-module.exports = function (app) {
+export default function (app) {
   app.get("/device", (req, res) => {
     const id = deviceID(req);
     const d = req.app.locals.store.getDevices()[id] || { requests: 0, firstSeen: 0, rateLimitHits: 0 };
@@ -14,4 +14,4 @@ module.exports = function (app) {
       suspiciousHits: d.rateLimitHits,
     });
   });
-};
+}

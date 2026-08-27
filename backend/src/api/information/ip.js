@@ -1,7 +1,7 @@
-const { ok } = require("../../lib/respond");
-const { clientIP, maskIP } = require("../../lib/security");
+import { ok } from "../../lib/respond.js";
+import { clientIP, maskIP } from "../../lib/security.js";
 
-module.exports = function (app) {
+export default function (app) {
   app.get("/ip", (req, res) => {
     const raw = clientIP(req);
     const family = raw.includes(":") ? "IPv6" : "IPv4";
@@ -12,4 +12,4 @@ module.exports = function (app) {
       note: "Only the masked network prefix is returned and logged.",
     });
   });
-};
+}

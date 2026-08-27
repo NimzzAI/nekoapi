@@ -1,12 +1,7 @@
-/**
- * GET /ai/chat — general-purpose chat completion via the free public
- * Siputzx GPT-3 API (api.siputzx.my.id), the same upstream Takanashi's
- * ai-gpt3.js uses. No API key required.
- */
-const { getJSON } = require("../../lib/http");
-const { ok, fail } = require("../../lib/respond");
+import { getJSON } from "../../lib/http.js";
+import { ok, fail } from "../../lib/respond.js";
 
-module.exports = function (app) {
+export default function (app) {
   app.get("/ai/chat", async (req, res) => {
     const explicitContent = req.query.content;
     const prompt = req.query.prompt;
@@ -28,4 +23,4 @@ module.exports = function (app) {
       fail(res, "UPSTREAM_ERROR", "the AI provider did not respond");
     }
   });
-};
+}

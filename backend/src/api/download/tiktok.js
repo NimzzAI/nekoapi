@@ -1,16 +1,12 @@
-/**
- * GET /download/tiktok — no-watermark TikTok download links via tikwm.com,
- * the same free public upstream Takanashi's download-tiktok.js uses.
- */
-const { postJSON, MOBILE_UA } = require("../../lib/http");
-const { ok, fail } = require("../../lib/respond");
+import { postJSON, MOBILE_UA } from "../../lib/http.js";
+import { ok, fail } from "../../lib/respond.js";
 
 function prefixTikwm(path) {
   if (!path || path.startsWith("http")) return path;
   return `https://www.tikwm.com${path}`;
 }
 
-module.exports = function (app) {
+export default function (app) {
   app.get("/download/tiktok", async (req, res) => {
     const url = req.query.url;
     if (!url) return fail(res, "BAD_REQUEST", "url is required");
@@ -57,4 +53,4 @@ module.exports = function (app) {
       fail(res, "UPSTREAM_ERROR", "unable to resolve this TikTok link");
     }
   });
-};
+}

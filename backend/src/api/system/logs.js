@@ -1,6 +1,6 @@
-const { ok } = require("../../lib/respond");
+import { ok } from "../../lib/respond.js";
 
-module.exports = function (app) {
+export default function (app) {
   app.get("/logs", (req, res) => {
     const q = req.query;
     let items = req.app.locals.store.getLogs();
@@ -41,4 +41,4 @@ module.exports = function (app) {
 
     ok(res, { total, page, perPage, pages, items: items.slice(start, end) });
   });
-};
+}

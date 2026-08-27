@@ -1,13 +1,6 @@
-/**
- * In-memory store backing /stats, /logs, /security and /status. Zero setup,
- * mirrors the old Go backend's internal/store/store.go so the dashboard's
- * data shape is unchanged. Swap for a real database by keeping the same
- * method names.
- */
-
 const MAX_LOGS = 500;
 
-class MemoryStore {
+export class MemoryStore {
   constructor() {
     this.bootedAt = Date.now();
     this.logs = [];
@@ -98,7 +91,6 @@ class MemoryStore {
       if (now - l.ts <= 60_000) rpm++;
     }
 
-    // 12 buckets of 5 seconds — real counters, never synthetic values.
     const samples = [];
     for (let i = 11; i >= 0; i--) {
       const from = now - (i + 1) * 5000;
@@ -131,5 +123,3 @@ class MemoryStore {
     };
   }
 }
-
-module.exports = { MemoryStore };

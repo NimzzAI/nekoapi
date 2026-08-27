@@ -1,11 +1,7 @@
-/**
- * GET /search/npm — npm registry package search via the official public
- * registry API (registry.npmjs.org). No key needed.
- */
-const { getJSON } = require("../../lib/http");
-const { ok, fail } = require("../../lib/respond");
+import { getJSON } from "../../lib/http.js";
+import { ok, fail } from "../../lib/respond.js";
 
-module.exports = function (app) {
+export default function (app) {
   app.get("/search/npm", async (req, res) => {
     const q = req.query.q;
     if (!q || !String(q).trim()) return fail(res, "BAD_REQUEST", "q is required");
@@ -24,4 +20,4 @@ module.exports = function (app) {
       fail(res, "UPSTREAM_ERROR", "npm registry did not respond");
     }
   });
-};
+}

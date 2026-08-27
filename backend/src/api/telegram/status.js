@@ -1,6 +1,6 @@
-const { ok, fail } = require("../../lib/respond");
+import { ok, fail } from "../../lib/respond.js";
 
-module.exports = function (app) {
+export default function (app) {
   app.get("/telegram/status", async (req, res) => {
     const telegram = req.app.locals.telegram;
     if (!telegram.configured()) {
@@ -23,4 +23,4 @@ module.exports = function (app) {
       fail(res, err.code || "UPSTREAM_ERROR", err.message);
     }
   });
-};
+}

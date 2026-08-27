@@ -1,7 +1,7 @@
-const { ok } = require("../../lib/respond");
-const { CATALOG } = require("../../lib/catalog");
+import { ok } from "../../lib/respond.js";
+import { CATALOG } from "../../lib/catalog.js";
 
-module.exports = function (app) {
+export default function (app) {
   app.get("/stats", (req, res) => {
     const s = req.app.locals.store.snapshot();
     ok(res, {
@@ -18,4 +18,4 @@ module.exports = function (app) {
       perEndpoint: req.app.locals.store.getEndpoints(),
     });
   });
-};
+}

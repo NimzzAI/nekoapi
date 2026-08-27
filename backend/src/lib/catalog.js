@@ -1,10 +1,5 @@
-/**
- * Public endpoint catalog, mirrors ENDPOINTS in
- * frontend/src/api/core/registry.ts. Used by GET /endpoints to report live
- * call counts. The Telegram notifier is intentionally excluded — see
- * src/api/telegram/*.js and the comment in index.js.
- */
-const CATALOG = [
+// Mirrors ENDPOINTS in frontend/src/api/core/registry.ts — used by GET /endpoints.
+export const CATALOG = [
   { id: "ping", method: "GET", path: "/ping", category: "General", description: "Health check.", rateLimit: "90 req / min", responseKind: "json" },
   { id: "status", method: "GET", path: "/status", category: "General", description: "Aggregated service status.", rateLimit: "90 req / min", responseKind: "json" },
   { id: "system", method: "GET", path: "/system", category: "System", description: "Host runtime, CPU and memory measured from the process.", rateLimit: "90 req / min", responseKind: "json" },
@@ -26,5 +21,3 @@ const CATALOG = [
   { id: "search-lyrics", method: "GET", path: "/search/lyrics", category: "Search", description: "Finds song lyrics by title/artist.", rateLimit: "30 req / min", responseKind: "json" },
   { id: "search-npm", method: "GET", path: "/search/npm", category: "Search", description: "Searches the npm registry.", rateLimit: "30 req / min", responseKind: "json" },
 ];
-
-module.exports = { CATALOG };

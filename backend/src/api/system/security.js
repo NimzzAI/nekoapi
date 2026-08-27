@@ -1,7 +1,7 @@
-const { ok } = require("../../lib/respond");
-const { DEFAULT_LIMIT, ENDPOINT_LIMITS } = require("../../lib/security");
+import { ok } from "../../lib/respond.js";
+import { DEFAULT_LIMIT, ENDPOINT_LIMITS } from "../../lib/security.js";
 
-module.exports = function (app) {
+export default function (app) {
   app.get("/security", (req, res) => {
     const snap = req.app.locals.limiter.snapshot();
     const devices = req.app.locals.store.getDevices();
@@ -38,4 +38,4 @@ module.exports = function (app) {
       ],
     });
   });
-};
+}

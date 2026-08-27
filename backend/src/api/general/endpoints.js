@@ -1,7 +1,7 @@
-const { ok } = require("../../lib/respond");
-const { CATALOG } = require("../../lib/catalog");
+import { ok } from "../../lib/respond.js";
+import { CATALOG } from "../../lib/catalog.js";
 
-module.exports = function (app) {
+export default function (app) {
   app.get("/endpoints", (req, res) => {
     const calls = {};
     for (const e of req.app.locals.store.getEndpoints()) calls[e.path] = e.count;
@@ -19,4 +19,4 @@ module.exports = function (app) {
 
     ok(res, { count: CATALOG.length, endpoints: items });
   });
-};
+}

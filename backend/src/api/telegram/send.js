@@ -1,6 +1,6 @@
-const { ok, fail } = require("../../lib/respond");
+import { ok, fail } from "../../lib/respond.js";
 
-module.exports = function (app) {
+export default function (app) {
   app.post("/telegram/send", async (req, res) => {
     const { kind, chatId, text, url } = req.body || {};
 
@@ -18,4 +18,4 @@ module.exports = function (app) {
       fail(res, err.code || "UPSTREAM_ERROR", err.message);
     }
   });
-};
+}

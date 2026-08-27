@@ -1,7 +1,7 @@
-const os = require("os");
-const { ok } = require("../../lib/respond");
+import os from "os";
+import { ok } from "../../lib/respond.js";
 
-module.exports = function (app) {
+export default function (app) {
   app.get("/system", (req, res) => {
     const s = req.app.locals.store.snapshot();
     const mem = process.memoryUsage();
@@ -21,4 +21,4 @@ module.exports = function (app) {
       services: { api: "up", logger: "up", rateLimiter: "up", telegram },
     });
   });
-};
+}

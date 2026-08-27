@@ -1,11 +1,7 @@
-/**
- * GET /download/youtube — download links and metadata via a2zconverter.com,
- * the same free public upstream Takanashi's download-youtube.js uses.
- */
-const { getJSON } = require("../../lib/http");
-const { ok, fail } = require("../../lib/respond");
+import { getJSON } from "../../lib/http.js";
+import { ok, fail } from "../../lib/respond.js";
 
-module.exports = function (app) {
+export default function (app) {
   app.get("/download/youtube", async (req, res) => {
     const url = req.query.url;
     if (!url) return fail(res, "BAD_REQUEST", "url is required");
@@ -21,4 +17,4 @@ module.exports = function (app) {
       fail(res, "UPSTREAM_ERROR", "unable to resolve this YouTube link");
     }
   });
-};
+}

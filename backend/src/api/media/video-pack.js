@@ -1,15 +1,14 @@
-const axios = require("axios");
-const archiver = require("archiver");
-const { fail } = require("../../lib/respond");
+import axios from "axios";
+import archiver from "archiver";
+import { fail } from "../../lib/respond.js";
 
-// SSRF protection: only vetted upstream URLs can be fetched, chosen by a
-// short internal key rather than accepting an arbitrary URL from the caller.
+// SSRF guard: only these vetted URLs can be fetched, selected by short key.
 const CLIP_ALLOWLIST = {
   neko: "https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4",
   demo: "https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
 };
 
-module.exports = function (app) {
+export default function (app) {
   app.get("/video/pack", async (req, res) => {
     const clip = req.query.clip || "neko";
     const src = CLIP_ALLOWLIST[clip];
@@ -52,4 +51,4 @@ module.exports = function (app) {
     archive.append(manifest, { name: "manifest.json" });
     archive.finalize();
   });
-};
+}

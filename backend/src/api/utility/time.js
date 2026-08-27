@@ -1,8 +1,8 @@
-const { ok, fail } = require("../../lib/respond");
+import { ok, fail } from "../../lib/respond.js";
 
 const TZ_PATTERN = /^[A-Za-z_]+\/[A-Za-z_+\-0-9]+$/;
 
-module.exports = function (app) {
+export default function (app) {
   app.get("/time", (req, res) => {
     const tz = req.query.tz;
     const now = new Date();
@@ -39,4 +39,4 @@ module.exports = function (app) {
       local,
     });
   });
-};
+}

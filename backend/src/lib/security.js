@@ -1,8 +1,6 @@
-const crypto = require("crypto");
+import crypto from "crypto";
 
-/* ---------- client IP / device fingerprint ---------- */
-
-function clientIP(req) {
+export function clientIP(req) {
   for (const key of ["cf-connecting-ip", "x-real-ip"]) {
     const v = (req.headers[key] || "").toString().trim();
     if (v) return v;
@@ -12,8 +10,8 @@ function clientIP(req) {
   return req.socket?.remoteAddress || req.ip || "unknown";
 }
 
-// Reduces an address to a network prefix — raw IPs are never stored.
-function maskIP(ip) {
+// Only a network prefix is ever kept — raw IPs are never stored.
+export function maskIP(ip) {
   if (!ip || ip === "unknown") return "unknown";
   if (ip.includes(":")) {
     const parts = ip.split(":");
@@ -25,9 +23,8 @@ function maskIP(ip) {
   return `${parts[0]}.${parts[1]}.${parts[2]}.0/24`;
 }
 
-// Privacy-conscious fingerprint: coarse signals + a daily rotating salt —
-// never a persistent tracking ID.
-function deviceID(req) {
+// Coarse signals + a daily rotating salt — never a persistent tracking ID.
+export function deviceID(req) {
   const daySalt = Math.floor(Date.now() / 86_400_000).toString();
   const material = [
     clientIP(req),
@@ -40,7 +37,7 @@ function deviceID(req) {
   return "dev_" + sum.slice(0, 20);
 }
 
-function coarseClient(req) {
+export function coarseClient(req) {
   const ua = req.headers["user-agent"] || "";
   let platform = "unknown";
   if (/Windows/i.test(ua)) platform = "Windows";
@@ -59,11 +56,8 @@ function coarseClient(req) {
   return { platform, engine, formFactor };
 }
 
-/* ---------- rate limiter ---------- */
-
 const DEFAULT_LIMIT = { windowMs: 60_000, max: 90 };
 
-// Tighter budgets for expensive or abuse-prone endpoints.
 const ENDPOINT_LIMITS = {
   "/telegram/send": { windowMs: 60_000, max: 8 },
   "/video/pack": { windowMs: 60_000, max: 6 },
@@ -77,7 +71,7 @@ const ENDPOINT_LIMITS = {
   "/search/npm": { windowMs: 60_000, max: 30 },
 };
 
-class Limiter {
+export class Limiter {
   constructor() {
     this.buckets = new Map();
   }
@@ -103,7 +97,6 @@ class Limiter {
       this.buckets.set(key, b);
     }
     b.count++;
-    // sustained flooding (3x the budget) earns a 5 minute block
     if (b.count > limit.max * 3) {
       b.blockedUntil = now + 300_000;
     }
@@ -130,8 +123,6 @@ class Limiter {
     return { activeBuckets: this.buckets.size, blockedIdentities: blocked, throttledIdentities: throttled };
   }
 
-  // Periodic cleanup so long-running processes don't leak memory from
-  // one-off identities that will never come back.
   sweep() {
     const now = Date.now();
     for (const [key, b] of this.buckets) {
@@ -140,4 +131,4 @@ class Limiter {
   }
 }
 
-module.exports = { clientIP, maskIP, deviceID, coarseClient, Limiter, DEFAULT_LIMIT, ENDPOINT_LIMITS };
+export { DEFAULT_LIMIT, ENDPOINT_LIMITS };

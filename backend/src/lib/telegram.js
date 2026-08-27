@@ -1,15 +1,8 @@
-/**
- * The single place that talks to the Telegram Bot API. The bot token is
- * read from the environment and never leaves the server. This powers the
- * internal notifier (/telegram/status, /telegram/send) the bot uses to
- * push logs, errors and daily/weekly/monthly reports — not a public,
- * general-purpose feature (it's excluded from the public catalog).
- */
-const axios = require("axios");
+import axios from "axios";
 
 const API = "https://api.telegram.org";
 
-class TelegramConnector {
+export class TelegramConnector {
   constructor(token) {
     this.token = token || "";
     this.client = axios.create({ timeout: 10_000 });
@@ -95,5 +88,3 @@ class TelegramConnector {
     return result.message_id;
   }
 }
-
-module.exports = { TelegramConnector };
