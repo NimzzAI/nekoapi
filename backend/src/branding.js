@@ -7,6 +7,6 @@
 module.exports = {
   name: "NekoAPI",
   owner: "Nimzz",
-  url: "https://nekoapi.dev",
+  url: "https://api-nekoapi.vercel.app/",
   version: "1.0.0",
 };

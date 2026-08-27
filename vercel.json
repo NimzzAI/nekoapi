@@ -3,6 +3,7 @@
   "services": {
     "frontend": {
       "root": "frontend/",
+      "framework": "tanstack-start",
       "buildCommand": "npm run build",
       "outputDirectory": "dist/client",
       "installCommand": "npm install",
