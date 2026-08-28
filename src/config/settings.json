@@ -1,0 +1,19 @@
+{
+  "apiName": "NekoAPI",
+  "apiCreator": "Nimzz",
+  "apiDescription": "REST API multi-fitur — AI, downloader, anime, games, pencarian — dengan rate limiting IP & device, dan notifikasi keamanan lewat Telegram.",
+
+  "telegramLogAllRequests": false,
+
+  "rateLimit": {
+    "windowMs": 60000,
+    "maxIp": 60,
+    "maxDevice": 90
+  },
+
+  "ban": {
+    "threshold": 5,
+    "windowMs": 600000,
+    "durationMs": 1800000
+  }
+}

@@ -1,90 +1,116 @@
-import axios from "axios";
+/**
+ * Telegram Webhook Notifier
+ * ---------------------------------------------------------
+ * Mengirim notifikasi ke Telegram (via Bot API) untuk event-event
+ * penting: server start, rate limit terlampaui, IP/device diblokir,
+ * dan error server. Pesan di-queue lalu dikirim gabungan tiap 2 detik
+ * supaya tidak kena flood limit dari Telegram.
+ *
+ * Diaktifkan lewat .env:
+ *   TELEGRAM_ENABLED=true
+ *   TELEGRAM_BOT_TOKEN=xxxx
+ *   TELEGRAM_CHAT_ID=xxxx
+ */
 
-const API = "https://api.telegram.org";
+const axios = require("axios");
+const chalk = require("chalk");
+const config = require("./config");
 
-export class TelegramConnector {
-  constructor(token) {
-    this.token = token || "";
-    this.client = axios.create({ timeout: 10_000 });
+const ENABLED = config.TELEGRAM_ENABLED;
+const BOT_TOKEN = config.TELEGRAM_BOT_TOKEN;
+const CHAT_ID = config.TELEGRAM_CHAT_ID;
+const LOG_ALL = config.TELEGRAM_LOG_ALL_REQUESTS;
+
+const API_URL = BOT_TOKEN ? `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage` : null;
+
+let queue = [];
+let warnedMissingConfig = false;
+
+function isConfigured() {
+  return ENABLED && BOT_TOKEN && CHAT_ID;
+}
+
+function warnOnce() {
+  if (warnedMissingConfig) return;
+  warnedMissingConfig = true;
+  console.log(
+    chalk.yellow(
+      "[telegram] Notifikasi Telegram nonaktif (TELEGRAM_ENABLED/BOT_TOKEN/CHAT_ID belum diisi di .env)"
+    )
+  );
+}
+
+async function flush() {
+  if (queue.length === 0) return;
+  if (!isConfigured()) {
+    queue = [];
+    return;
   }
 
-  configured() {
-    return this.token.length > 10;
-  }
+  const batch = queue.join("\n\n");
+  queue = [];
 
-  async call(method, payload) {
-    if (!this.configured()) {
-      const err = new Error("Telegram connector is not configured on this server");
-      err.code = "FORBIDDEN";
-      throw err;
-    }
-    let res;
-    try {
-      res = await this.client.post(`${API}/bot${this.token}/${method}`, payload, {
-        headers: { "content-type": "application/json" },
-      });
-    } catch (e) {
-      if (e.code === "ECONNABORTED") {
-        const err = new Error("Telegram connector is unreachable");
-        err.code = "TIMEOUT";
-        throw err;
-      }
-      const err = new Error("Telegram request failed");
-      err.code = "UPSTREAM_ERROR";
-      throw err;
-    }
-    const body = res.data;
-    if (!body || !body.ok) {
-      const err = new Error(body?.description || "Telegram rejected the request");
-      err.code = "UPSTREAM_ERROR";
-      throw err;
-    }
-    return body.result;
-  }
-
-  async getMe() {
-    const info = await this.call("getMe", {});
-    return { id: info.id, username: info.username, firstName: info.first_name };
-  }
-
-  async getUpdates(limit = 5) {
-    const clamped = Math.min(20, Math.max(1, limit));
-    return this.call("getUpdates", { limit: clamped, timeout: 0 });
-  }
-
-  async send({ kind = "message", chatId, text, url }) {
-    if (!chatId) {
-      const err = new Error("chatId is required");
-      err.code = "BAD_REQUEST";
-      throw err;
-    }
-    const payload = { chat_id: chatId };
-    let method;
-
-    if (kind === "message") {
-      if (!text) {
-        const err = new Error("text is required for kind=message");
-        err.code = "BAD_REQUEST";
-        throw err;
-      }
-      method = "sendMessage";
-      payload.text = text;
-    } else if (kind === "photo" || kind === "document" || kind === "audio") {
-      if (!url) {
-        const err = new Error(`url is required for kind=${kind}`);
-        err.code = "BAD_REQUEST";
-        throw err;
-      }
-      method = { photo: "sendPhoto", document: "sendDocument", audio: "sendAudio" }[kind];
-      payload[kind] = url;
-      if (text) payload.caption = text;
-    } else {
-      const err = new Error("kind must be message|photo|document|audio");
-      err.code = "BAD_REQUEST";
-      throw err;
-    }
-
-    const result = await this.call(method, payload);
-    return result.message_id;
+  try {
+    await axios.post(API_URL, {
+      chat_id: CHAT_ID,
+      text: batch,
+      parse_mode: "HTML",
+      disable_web_page_preview: true
+    });
+  } catch (err) {
+    console.error(chalk.red(`[telegram] Gagal kirim notifikasi: ${err.message}`));
   }
 }
+
+setInterval(flush, 2000);
+
+function push(message) {
+  if (!isConfigured()) {
+    warnOnce();
+    return;
+  }
+  queue.push(message);
+}
+
+function escapeHtml(str = "") {
+  return String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+}
+
+module.exports = {
+  isConfigured,
+
+  notifyServerStart(totalRoutes, port, siteUrl) {
+    push(`🟢 <b>NekoAPI started</b>\nRoutes loaded: <b>${totalRoutes}</b>\nPort: <b>${port}</b>\nSite URL: <code>${escapeHtml(siteUrl || "-")}</code>\nTime: ${new Date().toISOString()}`);
+  },
+
+  notifyRequest({ ip, deviceId, method, url, status, duration }) {
+    if (!LOG_ALL) return;
+    push(
+      `🟡 <b>Request</b>\n<code>[${method}] ${escapeHtml(url)}\nStatus: ${status} | ${duration}ms\nIP: ${ip} | Device: ${deviceId || "-"}</code>`
+    );
+  },
+
+  notifyRateLimit({ ip, deviceId, endpoint, kind }) {
+    push(
+      `⚠️ <b>Rate limit terlampaui (${kind})</b>\nEndpoint: <code>${escapeHtml(endpoint)}</code>\nIP: <code>${ip}</code>\nDevice: <code>${deviceId || "-"}</code>`
+    );
+  },
+
+  notifyBan({ ip, deviceId, reason, durationMs }) {
+    const minutes = Math.round(durationMs / 60000);
+    push(
+      `🚫 <b>Klien diblokir sementara</b>\nIP: <code>${ip}</code>\nDevice: <code>${deviceId || "-"}</code>\nAlasan: ${escapeHtml(reason)}\nDurasi: ${minutes} menit`
+    );
+  },
+
+  notifyError({ method, url, message }) {
+    push(`🚨 <b>Server Error</b>\n<code>[${method}] ${escapeHtml(url)}</code>\n${escapeHtml(message)}`);
+  },
+
+  notify(message) {
+    push(message);
+  }
+};

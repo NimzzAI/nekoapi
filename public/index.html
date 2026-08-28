@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>%%API_NAME%% — REST API oleh %%API_CREATOR%%</title>
+<meta name="description" content="%%API_DESCRIPTION%%">
+<link rel="canonical" href="%%SITE_URL%%/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="%%API_NAME%%">
+<meta property="og:title" content="%%API_NAME%% — REST API oleh %%API_CREATOR%%">
+<meta property="og:description" content="%%API_DESCRIPTION%%">
+<meta property="og:url" content="%%SITE_URL%%/">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="%%API_NAME%% — REST API oleh %%API_CREATOR%%">
+<meta name="twitter:description" content="%%API_DESCRIPTION%%">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22><path d=%22M5 3 L9 9 L5 9 Z M19 3 L15 9 L19 9 Z M4 9 h16 a1 1 0 0 1 1 1 v7 a4 4 0 0 1 -4 4 h-10 a4 4 0 0 1 -4 -4 v-7 a1 1 0 0 1 1 -1 Z%22 fill=%22%2315171C%22/></svg>">
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap">
+    <a href="/" class="brand">
+      <svg class="mark" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M5 3 L9 9 L5 9 Z M19 3 L15 9 L19 9 Z M4 9 H20 A1 1 0 0 1 21 10 V17 A4 4 0 0 1 17 21 H7 A4 4 0 0 1 3 17 V10 A1 1 0 0 1 4 9 Z" fill="var(--ink)"/>
+        <circle cx="9.5" cy="14.5" r="1.1" fill="var(--paper)"/>
+        <circle cx="14.5" cy="14.5" r="1.1" fill="var(--paper)"/>
+      </svg>
+      NekoAPI
+    </a>
+    <nav class="nav">
+      <a href="/" class="active">Beranda</a>
+      <a href="/docs">Dokumentasi</a>
+      <a href="/dashboard">Dashboard</a>
+      <a href="/terms">Ketentuan</a>
+      <a href="/privacy">Privasi</a>
+    </nav>
+    <a href="/docs" class="btn primary">Lihat Endpoint</a>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap">
+    <div class="eyebrow">Dokumentasi REST API — Dirawat oleh Nimzz</div>
+    <h1>API yang rapi,<br><em>dijaga</em> dengan serius.</h1>
+    <p class="lead">
+      NekoAPI mengumpulkan puluhan fitur — AI, downloader, anime, games, pencarian —
+      di satu REST API yang sama. Setiap request melewati lapisan keamanan: pembatasan
+      laju per IP dan per perangkat, dengan notifikasi langsung ke Telegram saat ada
+      aktivitas yang mencurigakan.
+    </p>
+    <div class="actions">
+      <a href="/docs" class="btn primary">Jelajahi Dokumentasi</a>
+      <a href="/dashboard" class="btn">Lihat Status Live</a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat">
+        <div class="num" id="stat-endpoints">—</div>
+        <div class="label">Endpoint</div>
+      </div>
+      <div class="stat">
+        <div class="num" id="stat-categories">—</div>
+        <div class="label">Kategori</div>
+      </div>
+      <div class="stat">
+        <div class="num">2</div>
+        <div class="label">Lapis Rate Limit</div>
+      </div>
+      <div class="stat">
+        <div class="num">24/7</div>
+        <div class="label">Pemantauan</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap">
+    <div class="section-head">
+      <div>
+        <div class="kicker">Keamanan</div>
+        <h2>Dibangun untuk bertahan dari penyalahgunaan</h2>
+      </div>
+      <div class="desc">Tiga lapis perlindungan berjalan di depan setiap endpoint, bukan tempelan belakangan.</div>
+    </div>
+
+    <div class="grid-3">
+      <div class="card">
+        <div class="idx">01 — IP</div>
+        <h3>Rate limit per alamat IP</h3>
+        <p>Setiap IP dibatasi sekian request per menit. Lewat batas, request ditolak dengan status 429 dan pesan yang jelas.</p>
+      </div>
+      <div class="card">
+        <div class="idx">02 — Device</div>
+        <h3>Rate limit per Device ID</h3>
+        <p>Header <code>X-Device-Id</code> dilacak terpisah dari IP, supaya satu jaringan yang dipakai banyak orang tetap adil, dan satu perangkat tidak bisa ganti IP untuk lolos.</p>
+      </div>
+      <div class="card">
+        <div class="idx">03 — Telegram</div>
+        <h3>Notifikasi & webhook Telegram</h3>
+        <p>Pelanggaran berulang otomatis diblokir sementara, dan admin mendapat notifikasi real-time lewat bot Telegram.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap">
+    <div class="section-head">
+      <div>
+        <div class="kicker">Kategori</div>
+        <h2>Semua fitur, satu dokumentasi</h2>
+      </div>
+      <div class="desc"><a href="/docs" style="text-decoration:underline; text-underline-offset:3px;">Buka daftar endpoint lengkap →</a></div>
+    </div>
+    <div id="category-list" class="grid-3" style="grid-template-columns:repeat(4,1fr);">
+      <div class="card"><p>Memuat kategori…</p></div>
+    </div>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <span>© <span id="year"></span> NekoAPI — dikembangkan oleh <strong>Nimzz</strong></span>
+    <span><a href="/terms">Ketentuan Layanan</a> · <a href="/privacy">Kebijakan Privasi</a></span>
+  </div>
+</footer>
+
+<script src="/script.js"></script>
+<script>
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  fetch('/api/list').then(r => r.json()).then(data => {
+    document.getElementById('stat-endpoints').textContent = data.totalEndpoints ?? '—';
+    const cats = Object.keys(data.categories || {});
+    document.getElementById('stat-categories').textContent = cats.length;
+
+    const container = document.getElementById('category-list');
+    container.style.gridTemplateColumns = 'repeat(4,1fr)';
+    container.innerHTML = cats.sort().map((c, i) => `
+      <div class="card">
+        <div class="idx">${String(i + 1).padStart(2, '0')}</div>
+        <h3 style="text-transform:capitalize">${c}</h3>
+        <p>${data.categories[c]} endpoint</p>
+      </div>
+    `).join('');
+  }).catch(() => {
+    document.getElementById('category-list').innerHTML = '<div class="card"><p>Gagal memuat kategori.</p></div>';
+  });
+</script>
+
+</body>
+</html>

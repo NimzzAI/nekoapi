@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard — %%API_NAME%%</title>
+<meta name="description" content="Status server real-time %%API_NAME%%.">
+<link rel="canonical" href="%%SITE_URL%%/dashboard">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="%%API_NAME%%">
+<meta property="og:title" content="Dashboard — %%API_NAME%%">
+<meta property="og:url" content="%%SITE_URL%%/dashboard">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22><path d=%22M5 3 L9 9 L5 9 Z M19 3 L15 9 L19 9 Z M4 9 h16 a1 1 0 0 1 1 1 v7 a4 4 0 0 1 -4 4 h-10 a4 4 0 0 1 -4 -4 v-7 a1 1 0 0 1 1 -1 Z%22 fill=%22%2315171C%22/></svg>">
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap">
+    <a href="/" class="brand">
+      <svg class="mark" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M5 3 L9 9 L5 9 Z M19 3 L15 9 L19 9 Z M4 9 H20 A1 1 0 0 1 21 10 V17 A4 4 0 0 1 17 21 H7 A4 4 0 0 1 3 17 V10 A1 1 0 0 1 4 9 Z" fill="var(--ink)"/>
+        <circle cx="9.5" cy="14.5" r="1.1" fill="var(--paper)"/>
+        <circle cx="14.5" cy="14.5" r="1.1" fill="var(--paper)"/>
+      </svg>
+      NekoAPI
+    </a>
+    <nav class="nav">
+      <a href="/">Beranda</a>
+      <a href="/docs">Dokumentasi</a>
+      <a href="/dashboard" class="active">Dashboard</a>
+      <a href="/terms">Ketentuan</a>
+      <a href="/privacy">Privasi</a>
+    </nav>
+    <a href="/docs" class="btn">Dokumentasi</a>
+  </div>
+</header>
+
+<section class="section" style="border-bottom:none;">
+  <div class="wrap">
+    <div class="kicker">Real-time</div>
+    <h2 style="font-family:var(--display); font-size:36px; font-weight:500; margin:8px 0 20px;">Status Server</h2>
+
+    <div class="status-line">
+      <span class="dot" id="status-dot"></span>
+      <span id="status-text">Menghubungkan…</span>
+      <span style="color:var(--ink-faint);">· diperbarui tiap 5 detik</span>
+    </div>
+
+    <div class="dash-grid">
+      <div class="dash-tile ok">
+        <div class="label">Uptime</div>
+        <div class="value" id="dash-uptime">—</div>
+      </div>
+      <div class="dash-tile">
+        <div class="label">Total Request</div>
+        <div class="value" id="dash-requests">—</div>
+      </div>
+      <div class="dash-tile">
+        <div class="label">Total Endpoint</div>
+        <div class="value" id="dash-endpoints">—</div>
+      </div>
+      <div class="dash-tile">
+        <div class="label">Memori (MB)</div>
+        <div class="value" id="dash-memory">—</div>
+      </div>
+    </div>
+
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:24px;">
+      <div class="security-panel">
+        <h3>Keamanan</h3>
+        <div class="kv-row"><span class="k">Request kena rate limit (429)</span><span class="v" id="sec-429">—</span></div>
+        <div class="kv-row"><span class="k">Klien diblokir sementara</span><span class="v" id="sec-banned">—</span></div>
+        <div class="kv-row"><span class="k">Total error server</span><span class="v" id="sec-errors">—</span></div>
+        <div class="kv-row"><span class="k">Notifikasi Telegram</span><span class="v" id="sec-telegram">—</span></div>
+      </div>
+      <div class="security-panel">
+        <h3>Info Server</h3>
+        <div class="kv-row"><span class="k">Nama</span><span class="v" id="info-name">—</span></div>
+        <div class="kv-row"><span class="k">Node.js</span><span class="v" id="info-node">—</span></div>
+        <div class="kv-row"><span class="k">Dijalankan sejak</span><span class="v" id="info-started">—</span></div>
+        <div class="kv-row"><span class="k">Total kategori</span><span class="v" id="info-categories">—</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <span>© <span id="year"></span> NekoAPI — dikembangkan oleh <strong>Nimzz</strong></span>
+    <span><a href="/terms">Ketentuan Layanan</a> · <a href="/privacy">Kebijakan Privasi</a></span>
+  </div>
+</footer>
+
+<script src="/script.js"></script>
+<script>
+document.getElementById('year').textContent = new Date().getFullYear();
+
+function fmtUptime(seconds) {
+  const d = Math.floor(seconds / 86400);
+  const h = Math.floor((seconds % 86400) / 3600);
+  const m = Math.floor((seconds % 3600) / 60);
+  if (d > 0) return `${d}h ${h}j`;
+  if (h > 0) return `${h}j ${m}m`;
+  return `${m}m`;
+}
+
+async function refresh() {
+  try {
+    const res = await fetch('/api/dashboard-stats');
+    const { result } = await res.json();
+
+    document.getElementById('status-dot').style.background = 'var(--good)';
+    document.getElementById('status-text').textContent = 'Server aktif';
+
+    document.getElementById('dash-uptime').textContent = fmtUptime(result.uptimeSeconds);
+    document.getElementById('dash-requests').textContent = result.totalRequests.toLocaleString('id-ID');
+    document.getElementById('dash-endpoints').textContent = result.totalEndpoints;
+    document.getElementById('dash-memory').textContent = result.memoryUsedMb;
+
+    document.getElementById('sec-429').textContent = result.totalBlocked429.toLocaleString('id-ID');
+    document.getElementById('sec-banned').textContent = result.totalBanned.toLocaleString('id-ID');
+    document.getElementById('sec-errors').textContent = result.totalErrors.toLocaleString('id-ID');
+    document.getElementById('sec-telegram').textContent = result.telegramEnabled ? 'Aktif' : 'Nonaktif';
+
+    document.getElementById('info-name').textContent = result.name;
+    document.getElementById('info-node').textContent = result.nodeVersion;
+    document.getElementById('info-started').textContent = new Date(result.startedAt).toLocaleString('id-ID');
+    document.getElementById('info-categories').textContent = result.totalCategories;
+  } catch (err) {
+    document.getElementById('status-dot').style.background = 'var(--accent-2)';
+    document.getElementById('status-text').textContent = 'Gagal terhubung ke server';
+  }
+}
+
+refresh();
+setInterval(refresh, 5000);
+</script>
+
+</body>
+</html>

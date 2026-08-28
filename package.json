@@ -1,27 +1,34 @@
 {
   "name": "nekoapi",
   "version": "1.0.0",
-  "description": "NekoAPI — Express, auto-loaded routes under src/api/<category>/*.js",
+  "description": "NekoAPI — REST API multi-fitur (AI, downloader, anime, games, search, tools) oleh Nimzz",
   "main": "index.js",
-  "type": "module",
+  "type": "commonjs",
   "scripts": {
-    "build": "esbuild api-page/src/home.ts api-page/src/dashboard.ts --bundle --format=iife --outdir=assets/js --minify",
-    "start": "node index.js",
-    "dev": "npm run build && node index.js"
+    "start": "node --no-deprecation index.js",
+    "dev": "nodemon index.js"
   },
   "engines": {
-    "node": ">=20"
+    "node": ">=18"
   },
   "author": "Nimzz",
   "license": "MIT",
   "dependencies": {
-    "archiver": "^7.0.1",
-    "axios": "^1.7.9",
+    "axios": "^1.7.7",
+    "cheerio": "^1.0.0",
+    "chalk": "^4.1.2",
     "cors": "^2.8.5",
-    "express": "^4.21.2"
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "form-data": "^4.0.1",
+    "jimp": "^0.16.1",
+    "node-fetch": "^2.7.0",
+    "qs": "^6.14.0",
+    "uuid": "^9.0.1",
+    "ws": "^8.18.0",
+    "yt-search": "^2.12.1"
   },
   "devDependencies": {
-    "esbuild": "^0.24.2",
-    "typescript": "^5.7.3"
+    "nodemon": "^3.1.9"
   }
 }
