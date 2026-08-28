@@ -1,0 +1,27 @@
+{
+  "name": "nekoapi",
+  "version": "1.0.0",
+  "description": "NekoAPI — Express, auto-loaded routes under src/api/<category>/*.js",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "build": "esbuild api-page/src/home.ts api-page/src/dashboard.ts --bundle --format=iife --outdir=assets/js --minify",
+    "start": "node index.js",
+    "dev": "npm run build && node index.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "author": "Nimzz",
+  "license": "MIT",
+  "dependencies": {
+    "archiver": "^7.0.1",
+    "axios": "^1.7.9",
+    "cors": "^2.8.5",
+    "express": "^4.21.2"
+  },
+  "devDependencies": {
+    "esbuild": "^0.24.2",
+    "typescript": "^5.7.3"
+  }
+}

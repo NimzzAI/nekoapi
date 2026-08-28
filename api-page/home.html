@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>NekoAPI</title>
+<link rel="icon" href="/icon.svg" />
+<style>
+  :root { --bg: #100e1a; --card: #1a1730; --line: #2c2748; --text: #ece9ff; --dim: #948fc2; --accent: #f472b6; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font-family: system-ui, sans-serif; }
+  header { padding: 48px 20px 24px; text-align: center; }
+  header img { width: 56px; height: 56px; }
+  header h1 { margin: 12px 0 4px; font-size: 28px; }
+  header p { margin: 0; color: var(--dim); }
+  nav { text-align: center; margin-bottom: 32px; }
+  nav a { color: var(--accent); text-decoration: none; margin: 0 8px; font-size: 14px; }
+  main { max-width: 720px; margin: 0 auto; padding: 0 20px 60px; }
+  .category { margin-bottom: 28px; }
+  .category h2 { font-size: 14px; text-transform: uppercase; letter-spacing: .08em; color: var(--dim); margin-bottom: 10px; }
+  .endpoint { display: flex; justify-content: space-between; align-items: center; gap: 12px; background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; margin-bottom: 8px; }
+  .endpoint .path { font-family: ui-monospace, monospace; font-size: 13px; }
+  .endpoint .desc { color: var(--dim); font-size: 12px; margin-top: 2px; }
+  .method { font-size: 11px; font-weight: 600; color: var(--accent); border: 1px solid var(--accent); border-radius: 6px; padding: 2px 6px; flex-shrink: 0; }
+  #state { text-align: center; color: var(--dim); padding: 40px 0; }
+</style>
+</head>
+<body>
+  <header>
+    <img src="/icon.svg" alt="NekoAPI" />
+    <h1>NekoAPI</h1>
+    <p>Public REST endpoints, grouped by category.</p>
+  </header>
+  <nav>
+    <a href="/dashboard">Dashboard</a>
+    <a href="/endpoints">Raw JSON</a>
+    <a href="/status">Status</a>
+  </nav>
+  <main>
+    <div id="state">Loading endpoints…</div>
+    <div id="list"></div>
+  </main>
+  <script src="/js/home.js" defer></script>
+</body>
+</html>
