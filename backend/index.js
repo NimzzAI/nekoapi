@@ -119,6 +119,10 @@ for (const category of fs.readdirSync(apiFolder)) {
 }
 console.log(`[nekoapi] ${totalRoutes} routes loaded`);
 
+app.get("/", (req, res) => {
+  res.json({ success: true, name: "NekoAPI", status: "up", endpoints: "/endpoints" });
+});
+
 app.use("/src", (req, res) => fail(res, "FORBIDDEN", "Forbidden"));
 
 app.use((req, res) => fail(res, "NOT_FOUND", `no endpoint matches ${req.method} ${req.path}`));
