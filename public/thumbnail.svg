@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400">
+  <rect width="600" height="400" fill="#F6F4EF"/>
+  <rect x="16" y="16" width="568" height="368" fill="none" stroke="#15171C" stroke-opacity="0.14" stroke-width="1"/>
+
+  <g transform="translate(258,140)">
+    <path d="M5 3 L17 3 L11 15 L5 15 Z M39 3 L27 3 L33 15 L39 15 Z M2 15 H40 A2 2 0 0 1 42 17 V35 A8 8 0 0 1 34 43 H8 A8 8 0 0 1 0 35 V17 A2 2 0 0 1 2 15 Z"
+      fill="#15171C" transform="scale(1.1)"/>
+    <circle cx="13.5" cy="30" r="2.2" fill="#F6F4EF" transform="scale(1.1)"/>
+    <circle cx="28.5" cy="30" r="2.2" fill="#F6F4EF" transform="scale(1.1)"/>
+  </g>
+
+  <text x="300" y="250" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="40" fill="#15171C" font-weight="600">NekoAPI</text>
+  <rect x="255" y="266" width="90" height="2" fill="#2B3A67"/>
+  <text x="300" y="292" text-anchor="middle" font-family="Consolas, 'Courier New', monospace" font-size="12" letter-spacing="2" fill="#55585F">REST API BY NIMZZ</text>
+</svg>

@@ -1,130 +1,793 @@
+<div align="center">
+
 # NekoAPI
 
-REST API multi-fitur — AI, downloader, anime, games, pencarian, dan lainnya — dikembangkan oleh **Nimzz**.
+**Simple, Fast, and Dynamic REST API Base built with Express & TypeScript.**
 
-Project ini adalah hasil gabungan (`combo`) dua codebase: `base-api-main` dan `api-Takanashi-main`, dirapikan ulang jadi satu struktur, ditambah lapisan keamanan baru dan tampilan website minimalis bergaya Eropa.
+<p>
+  <img src="https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript" />
+  <img src="https://img.shields.io/badge/Express.js-000000?style=for-the-badge&logo=express&logoColor=white" alt="Express" />
+  <img src="https://img.shields.io/badge/PM2-2B037A?style=for-the-badge&logo=pm2&logoColor=white" alt="PM2" />
+  <img src="https://img.shields.io/badge/VPS_Ready-107C10?style=for-the-badge&logo=windows-terminal&logoColor=white" alt="VPS" />
+  <img src="https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white" alt="Vercel" />
+</p>
 
----
-
-## ✨ Fitur
-
-- **108 endpoint** REST API, dikelompokkan flat per kategori (`ai`, `anime`, `download`, `image`, `news`, `games`, `maker`, `random`, `search`, `api`) — satu file per fitur, bukan folder-per-endpoint.
-- **Rate limiting ganda**: per alamat IP *dan* per Device ID (header `X-Device-Id`), dengan pemblokiran sementara otomatis untuk pelanggar berulang.
-- **Notifikasi & webhook Telegram**: alert real-time ke Telegram saat ada rate-limit, pemblokiran, atau error server; plus endpoint penerima webhook untuk integrasi bot admin ke depannya.
-- **Site URL config terpusat** (`SITE_URL` di `.env`) — otomatis dipakai di meta tag `og:url`/canonical semua halaman, `robots.txt`, `sitemap.xml`, dan log webhook, tanpa perlu ubah kode saat pindah dari localhost ke domain produksi.
-- **Dashboard real-time** (`/dashboard`) dan **dokumentasi endpoint interaktif** (`/docs`) dengan pencarian & filter kategori.
-- Halaman **Ketentuan Layanan** dan **Kebijakan Privasi** siap pakai.
-- Desain minimalis Eropa: kertas hangat, tinta nyaris hitam, satu aksen indigo, tipografi Fraunces + Inter + IBM Plex Mono, tanpa shadow/gradient.
+</div>
 
 ---
 
-## 🚀 Menjalankan
+## Introduction
+
+**NekoAPI** adalah template dasar untuk membangun REST API menggunakan **Express.js** dan **TypeScript**.
+
+Project ini dirancang dengan struktur modular sehingga endpoint dapat ditambahkan, dikelola, dan dikembangkan tanpa perlu mengubah file utama `index.ts`.
+
+### What You Get
+
+- Dynamic Router
+- JSON-based endpoint configuration
+- Automatic router loading
+- Development hot reload
+- Global error handler
+- Request logger
+- IP-based rate limiter
+- Automatic API documentation
+- Server statistics
+- VPS support
+- Vercel support
+
+---
+
+## Features
+
+| Feature | Description |
+| :--- | :--- |
+| **TypeScript** | Static typing untuk membuat kode lebih aman dan mudah dirawat. |
+| **Dynamic Routing** | Endpoint didaftarkan melalui file JSON. |
+| **Auto Loader** | Router otomatis dimuat berdasarkan konfigurasi endpoint. |
+| **Hot Reload** | Config, endpoint, dan router dapat dimuat ulang saat development. |
+| **Rate Limiter** | Membatasi request berdasarkan IP tanpa database. |
+| **Error Handler** | Menangani error endpoint secara terpusat. |
+| **Request Logger** | Menampilkan IP, status code, dan URL request. |
+| **Auto Docs** | Dokumentasi endpoint tersedia melalui `/docs`. |
+| **Server Stats** | Informasi CPU, RAM, uptime, dan request melalui `/stats`. |
+| **Modern UI** | Landing page dan documentation UI bawaan. |
+| **Vercel Ready** | Dapat digunakan pada Vercel maupun VPS. |
+| **VPS Ready** | Dapat dijalankan menggunakan Node.js atau PM2. |
+
+---
+
+## Rate Limiter
+
+NekoAPI menggunakan **IP-based rate limiter** dan tidak membutuhkan database.
+
+### Default Configuration
+
+| Setting | Value |
+| :--- | :--- |
+| Request Limit | `15 requests` |
+| Window | `1 second` |
+| Ban Duration | `1 minute` |
+| Storage | In-memory |
+| Database | Not required |
+
+Jika sebuah IP mengirim lebih dari **15 request dalam 1 detik**, IP tersebut akan mendapatkan HTTP `429 Too Many Requests` dan diblokir sementara selama **1 menit**.
+
+### Response
+
+```json
+{
+  "status": false,
+  "message": "Too many requests. You are temporarily banned"
+}
+```
+
+Rate limiter dipasang secara global sehingga berlaku untuk seluruh endpoint yang berada setelah middleware.
+
+> **Note:** Rate limiter menggunakan memory process.
+>
+> Pada VPS dengan satu process, state berada pada process tersebut.
+>
+> Pada Vercel/serverless, state tidak dijamin persisten antar-instance. Oleh karena itu, rate limiter ini **bukan distributed rate limiter**.
+
+---
+
+## Project Structure
+
+```text
+.
+├── index.ts
+├── package.json
+├── README.md
+├── tsconfig.json
+├── vercel.json
+│
+├── public
+│   ├── favicon.svg
+│   ├── thumbnail.svg
+│   │
+│   ├── docs
+│   │   ├── docs.css
+│   │   ├── docs.html
+│   │   └── docs.js
+│   │
+│   ├── landing
+│   │   ├── landing.css
+│   │   ├── landing.html
+│   │   └── landing.js
+│   │
+│   └── stats
+│       ├── stats.css
+│       ├── stats.html
+│       └── stats.js
+│
+├── router
+│   ├── download
+│   │   └── facebook.ts
+│   │
+│   ├── maker
+│   │   └── brat.ts
+│   │
+│   ├── random
+│   │   └── blue_archive.ts
+│   │
+│   ├── search
+│   │   ├── pinterest.ts
+│   │   └── yts.ts
+│   │
+│   └── tools
+│       └── shorturl.ts
+│
+└── src
+    ├── autoload.ts
+    ├── config.json
+    ├── logger.ts
+    │
+    ├── endpoints
+    │   ├── download.json
+    │   ├── maker.json
+    │   ├── random.json
+    │   ├── search.json
+    │   └── tools.json
+    │
+    └── middleware
+        ├── errorHandler.ts
+        └── rateLimit.ts
+```
+
+---
+
+## Build System
+
+NekoAPI menggunakan **TypeScript** sebagai source code.
+
+Saat project di-build, TypeScript akan dikompilasi menjadi JavaScript dan disimpan di folder `dist/`.
+
+```text
+Source Code
+    │
+    ▼
+TypeScript
+    │
+    ▼
+npm run build
+    │
+    ▼
+dist/
+    │
+    ▼
+JavaScript
+    │
+    ▼
+Node.js
+```
+
+### Development
 
 ```bash
-npm install
-cp .env.example .env
-# edit .env sesuai kebutuhan (lihat bagian Konfigurasi di bawah)
+npm run dev
+```
+
+Development menjalankan source TypeScript secara langsung.
+
+### Production
+
+```bash
+npm run build
 npm start
 ```
 
-Server default jalan di `http://localhost:4000`. Buka `/`, `/docs`, atau `/dashboard` di browser.
-
-> **Catatan**: proses pembuatan project ini dilakukan di sandbox tanpa akses internet, jadi `npm install` belum pernah dijalankan/dites di sisi saya. Semua file JavaScript sudah lolos syntax check (`node --check`), tapi tetap jalankan dan tes sendiri sebelum deploy ke produksi, terutama endpoint yang scraping ke situs pihak ketiga (kadang berubah struktur HTML-nya).
+Production menjalankan hasil compile dari folder `dist/`.
 
 ---
 
-## ⚙️ Konfigurasi
+## Installation
 
-Config dipecah jadi dua tempat sesuai sifatnya:
+### Requirements
 
-### `.env` — cuma yang wajib beda tiap deploy / rahasia
+Pastikan sudah menginstall:
 
-| Variabel | Fungsi |
-|---|---|
-| `PORT` | Port server (default `4000`) |
-| `SITE_URL` | **Base URL publik project ini** (tanpa trailing slash). Dipakai di meta tag OG/canonical, `robots.txt`, `sitemap.xml`, dan contoh URL webhook. Ganti ke domain asli saat deploy, mis. `https://api.nimzz.dev` |
-| `TELEGRAM_ENABLED` | `true`/`false` — aktifkan notifikasi Telegram |
-| `TELEGRAM_BOT_TOKEN` | Token bot dari [@BotFather](https://t.me/BotFather) |
-| `TELEGRAM_CHAT_ID` | ID chat/grup/channel tujuan notifikasi |
-| `TELEGRAM_WEBHOOK_SECRET` | Secret path untuk endpoint penerima webhook (`/webhook/telegram/<secret>`) |
+- Node.js 18+
+- npm
+- Git
 
-Lihat `.env.example` untuk nilai default lengkap.
+### 1. Clone Repository
 
-### `src/config/settings.json` — sisanya, aman di-commit ke git
-
-File biasa (bukan `.env`), isinya nilai yang jarang berubah dan bukan rahasia — jadi boleh ikut ke-commit supaya semua orang di tim pakai default yang sama:
-
-| Key | Fungsi |
-|---|---|
-| `apiName`, `apiCreator`, `apiDescription` | Identitas API — muncul di response JSON, judul halaman, dan meta tag |
-| `telegramLogAllRequests` | `true` kalau mau tiap request (bukan cuma error/rate-limit) dikirim ke Telegram — default `false` karena bisa spam |
-| `rateLimit.windowMs` / `rateLimit.maxIp` / `rateLimit.maxDevice` | Jendela waktu & batas rate limit |
-| `ban.threshold` / `ban.windowMs` / `ban.durationMs` | Eskalasi ke blokir sementara |
-
-Mau ubah nama API atau angka rate limit? Tinggal edit file JSON ini, tidak perlu sentuh `.env`.
-
-### Menyambungkan bot Telegram
-
-1. Chat `@BotFather` di Telegram → `/newbot` → salin token ke `TELEGRAM_BOT_TOKEN`.
-2. Tambahkan bot ke grup/channel tujuan, atau chat langsung, lalu ambil `chat_id`-nya (bisa lewat `getUpdates` atau bot seperti `@userinfobot`) → isi `TELEGRAM_CHAT_ID`.
-3. Set `TELEGRAM_ENABLED=true`.
-4. (Opsional) Kalau mau bot menerima update balik, set webhook Telegram ke:
-   ```
-   https://api.telegram.org/bot<TOKEN>/setWebhook?url=<SITE_URL>/webhook/telegram/<TELEGRAM_WEBHOOK_SECRET>
-   ```
-
----
-
-## 🔒 Cara kerja keamanan
-
-Setiap request masuk lewat `src/middleware/security.js` sebelum menyentuh endpoint manapun:
-
-1. **Cek daftar blokir** — kalau IP atau Device ID sedang diblokir, langsung ditolak `429` beserta sisa waktu blokir.
-2. **Rate limit IP** dan **rate limit Device ID** dicek terpisah (jendela waktu & batas diatur lewat `.env`).
-3. Kalau limit terlampaui, request ditolak `429` dan pelanggaran dicatat. Setelah pelanggaran mencapai `BAN_THRESHOLD` dalam `BAN_WINDOW_MS`, klien diblokir sementara selama `BAN_DURATION_MS` — otomatis, tersimpan ke `data/blocked_clients.json` supaya bertahan lintas restart server.
-4. Semua rate-limit dan blokir dikirim ke Telegram (kalau diaktifkan).
-
-Device ID diambil dari header `X-Device-Id` yang dikirim client. Kalau client tidak mengirimnya, sistem pakai fallback hash dari IP + User-Agent supaya tetap bisa dilacak.
-
----
-
-## 📁 Struktur folder
-
+```bash
+git clone <url-repo-kamu>
+cd nekoapi
 ```
-nekoapi/
-├── index.js                  # entry point, wiring semua middleware & routes
+
+### 2. Install Dependencies
+
+```bash
+npm install
+```
+
+### 3. Start Development Server
+
+```bash
+npm run dev
+```
+
+Server akan berjalan pada:
+
+```text
+http://localhost:3000
+```
+
+---
+
+## Configuration
+
+Konfigurasi utama berada di:
+
+```text
+src/config.json
+```
+
+Contoh:
+
+```json
+{
+  "settings": {
+    "creator": "Nimzz"
+  },
+  "tags": {}
+}
+```
+
+### Endpoint Configuration
+
+Konfigurasi endpoint dapat dipisahkan berdasarkan kategori di:
+
+```text
+src/endpoints/
+```
+
+Contoh:
+
+```text
+src/endpoints/search.json
+src/endpoints/download.json
+src/endpoints/tools.json
+```
+
+Setiap file konfigurasi akan otomatis dibaca oleh system loader.
+
+---
+
+## Adding a New Endpoint
+
+Tidak perlu mengubah `index.ts` untuk menambahkan endpoint baru.
+
+Cukup lakukan tiga langkah.
+
+### Step 1 — Add Endpoint Configuration
+
+Buat atau edit:
+
+```text
+src/endpoints/games.json
+```
+
+Contoh:
+
+```json
+[
+  {
+    "name": "Tebak Gambar",
+    "endpoint": "/api/games/tebak",
+    "filename": "tebak",
+    "method": "GET",
+    "params": [
+      {
+        "name": "level",
+        "required": true,
+        "description": "Game level"
+      }
+    ]
+  }
+]
+```
+
+### Step 2 — Create Router
+
+Buat file:
+
+```text
+router/games/tebak.ts
+```
+
+Contoh:
+
+```typescript
+import { Request, Response } from "express";
+
+export default async function tebakHandler(
+  req: Request,
+  res: Response
+) {
+  const level = String(req.query.level || "").trim();
+
+  if (!level) {
+    return res.status(400).json({
+      status: false,
+      message: "Parameter 'level' diperlukan."
+    });
+  }
+
+  return res.json({
+    status: true,
+    result: {
+      level,
+      message: `Kamu memilih level ${level}`
+    }
+  });
+}
+```
+
+### Step 3 — Test
+
+Development:
+
+```bash
+npm run dev
+```
+
+Production:
+
+```bash
+npm run build
+npm start
+```
+
+Endpoint akan otomatis tersedia:
+
+```http
+GET /api/games/tebak?level=1
+```
+
+---
+
+## Auto Loader
+
+File:
+
+```text
+src/autoload.ts
+```
+
+bertanggung jawab untuk:
+
+- Membaca konfigurasi endpoint
+- Mencari file router
+- Register route ke Express
+- Reload konfigurasi
+- Reload endpoint
+- Reload router
+- Membersihkan module cache saat development
+
+### Route Mapping
+
+Struktur route ditentukan berdasarkan:
+
+```text
+src/endpoints/category.json
+        │
+        ▼
+router/category/filename.ts
+```
+
+Contoh:
+
+```text
+src/endpoints/search.json
+        │
+        ▼
+router/search/yts.ts
+```
+
+Dengan struktur tersebut, penambahan endpoint dapat dilakukan tanpa memodifikasi file utama.
+
+---
+
+## Error Handler
+
+Error endpoint ditangani secara terpusat menggunakan middleware error handler.
+
+Router tidak perlu menggunakan `try/catch` untuk error yang tidak terduga.
+
+Contoh:
+
+```typescript
+export default async function exampleHandler(
+  req: Request,
+  res: Response
+) {
+  const data = await someRequest();
+
+  return res.json({
+    status: true,
+    result: data
+  });
+}
+```
+
+Jika terjadi error:
+
+```text
+Router
+  │
+  ▼
+throw error
+  │
+  ▼
+Auto Loader
+  │
+  ▼
+Error Handler
+  │
+  ▼
+HTTP 500
+```
+
+Pendekatan ini membuat kode endpoint lebih pendek dan konsisten.
+
+---
+
+## Request Logger
+
+Request API dicatat melalui:
+
+```text
+src/logger.ts
+```
+
+### Log Format
+
+```text
+[IP] = [STATUS] URL
+```
+
+Contoh:
+
+```text
+[127.0.0.1] = [200] http://localhost:3000/api/search/yts?q=test
+[127.0.0.1] = [429] http://localhost:3000/api/search/yts?q=test
+[127.0.0.1] = [500] http://localhost:3000/api/search/yts?q=test
+```
+
+Status code menggunakan warna ANSI pada terminal.
+
+---
+
+## Server Statistics
+
+Statistics tersedia melalui:
+
+```text
+/stats
+```
+
+Data JSON tersedia melalui:
+
+```text
+/stats/data
+```
+
+### Available Information
+
+- Operating system
+- CPU architecture
+- Hostname
+- Node.js version
+- Server uptime
+- RAM usage
+- CPU model
+- CPU speed
+- CPU cores
+- CPU load
+- Recent API requests
+
+---
+
+## Documentation
+
+Documentation UI tersedia melalui:
+
+```text
+/docs
+```
+
+Endpoint yang didaftarkan melalui:
+
+```text
+src/endpoints/*.json
+```
+
+dapat ditampilkan secara otomatis pada documentation UI.
+
+---
+
+## Available Pages
+
+| Path | Description |
+| :--- | :--- |
+| `/` | Landing page |
+| `/docs` | API documentation |
+| `/stats` | Server statistics |
+| `/stats/data` | Server statistics JSON |
+| `/config` | API configuration |
+
+---
+
+## Production
+
+### Build
+
+```bash
+npm run build
+```
+
+Kemudian jalankan:
+
+```bash
+npm start
+```
+
+Pastikan folder hasil build tersedia:
+
+```text
+dist/
+├── index.js
 ├── src/
-│   ├── api/                  # endpoint, flat per kategori
-│   │   ├── ai/  anime/  download/  image/  news/
-│   │   └── games/  maker/  random/  search/  api/
-│   ├── config/
-│   │   └── settings.json     # nama API, rate limit, ban — aman di-commit
-│   ├── lib/
-│   │   ├── config.js         # gabungin .env (rahasia) + settings.json (tuning)
-│   │   ├── telegram.js       # notifier & queue Telegram
-│   │   └── routeLoader.js    # loader dinamis + manifest endpoint
-│   ├── middleware/
-│   │   └── security.js       # rate limit IP + Device ID, sistem blokir
-│   └── assets/                # aset statis internal
-├── public/                   # website (index, docs, dashboard, terms, privacy, 404, 500)
-├── data/                     # blocked_clients.json (auto-generated saat runtime)
-├── .env.example
-└── package.json
+└── router/
 ```
 
 ---
 
-## ⚠️ Catatan penting soal isi project sumber
+## PM2
 
-Saat menggabungkan `base-api-main` dan `api-Takanashi-main`, beberapa hal sengaja **tidak** dibawa ke NekoAPI:
+Untuk menjalankan API sebagai background process pada VPS, install PM2:
 
-- **22 file endpoint** dari `api-Takanashi-main` dikeluarkan karena berisi konten dewasa eksplisit (folder NSFW, pencarian ke situs hentai/doujin, Pixiv R18) dan endpoint bertema "loli" — di luar cakupan yang bisa dibantu.
-- **Token rahasia yang ter-hardcode** di kode sumber asli (webhook Discord & bot token Telegram) sudah dihapus total dan diganti jadi environment variable kosong di `.env.example`. Isi sendiri dengan token milikmu — jangan pernah commit `.env` ke git.
-- Beberapa file endpoint duplikat (route yang sama terdaftar dua kali di `api-Takanashi-main`, dan dua route yang tabrakan antara kedua project) sudah dirapikan supaya tidak ada konflik routing.
-- Atribusi lisensi MIT dari kedua project sumber tetap dijaga di file `LICENSE`.
+```bash
+npm install -g pm2
+```
+
+Build project:
+
+```bash
+npm run build
+```
+
+Start application:
+
+```bash
+pm2 start dist/index.js --name "nekoapi"
+```
+
+Save process list:
+
+```bash
+pm2 save
+```
+
+Enable startup:
+
+```bash
+pm2 startup
+```
+
+Check status:
+
+```bash
+pm2 status
+```
+
+View logs:
+
+```bash
+pm2 logs nekoapi
+```
+
+Restart application:
+
+```bash
+pm2 restart nekoapi
+```
 
 ---
 
-## 📄 Lisensi
+## Vercel
 
-MIT — lihat [`LICENSE`](./LICENSE). Menggabungkan kode dari `base-api-main` (Randy Yuan Kurnianto) dan `api-Takanashi-main`, keduanya MIT.
+NekoAPI dapat digunakan pada **Vercel**.
+
+Pastikan file berikut tersedia pada root project:
+
+```text
+vercel.json
+```
+
+### Deployment
+
+1. Push repository ke GitHub.
+2. Import repository ke Vercel.
+3. Deploy project.
+4. Vercel akan menggunakan konfigurasi deployment yang tersedia.
+
+> **Important:** Rate limiter berbasis memory tidak dirancang sebagai distributed rate limiter.
+>
+> Pada platform serverless seperti Vercel, beberapa instance dapat memiliki memory/state yang berbeda.
+
+---
+
+## NPM Scripts
+
+### Development
+
+```bash
+npm run dev
+```
+
+Menjalankan server dalam mode development.
+
+### Build
+
+```bash
+npm run build
+```
+
+Compile TypeScript menjadi JavaScript.
+
+### Production
+
+```bash
+npm start
+```
+
+Menjalankan hasil build production.
+
+### PM2
+
+```bash
+npm run pm2
+```
+
+Menjalankan server menggunakan konfigurasi PM2 jika script tersebut tersedia di `package.json`.
+
+---
+
+## Development Tips
+
+Sebelum menjalankan production, selalu lakukan build:
+
+```bash
+npm run build
+```
+
+Jika terdapat error TypeScript, perbaiki error tersebut sebelum menjalankan production.
+
+### Check Build Output
+
+```bash
+ls dist
+```
+
+### Check Routers
+
+```bash
+find dist/router -type f
+```
+
+---
+
+## Troubleshooting
+
+### Config File Not Found
+
+Pastikan file berikut tersedia:
+
+```text
+src/config.json
+```
+
+### Route Tidak Muncul
+
+Periksa:
+
+```text
+src/endpoints/
+```
+
+Pastikan `filename` sesuai dengan file router pada:
+
+```text
+router/<category>/<filename>.ts
+```
+
+Contoh:
+
+```json
+{
+  "filename": "yts"
+}
+```
+
+harus memiliki router:
+
+```text
+router/search/yts.ts
+```
+
+### Rate Limit Terkena 429
+
+Jika sebuah IP melakukan lebih dari **15 request dalam 1 detik**, IP tersebut akan diblokir sementara selama **1 menit**.
+
+Response:
+
+```json
+{
+  "status": false,
+  "message": "Too many requests. You are temporarily banned"
+}
+```
+
+### Build Error
+
+Jalankan:
+
+```bash
+npm run build
+```
+
+Kemudian periksa pesan error TypeScript yang muncul pada terminal.
+
+---
+
+## License
+
+Project ini dapat digunakan sebagai base untuk membuat REST API pribadi maupun project publik.
+
+Silakan sesuaikan endpoint, konfigurasi, dan tampilan sesuai kebutuhan project.
+
+---
+
+## Catatan Migrasi dari Template Asli
+
+Saat template ini dirapikan jadi NekoAPI, satu endpoint sengaja **tidak dibawa**: `router/ai/kuroneko.ts`.
+Endpoint itu bukan memanggil API resmi, melainkan meniru request browser ke endpoint internal
+Gemini (`BardChatUi/batchexecute`) pakai cookie scraping untuk mengakalinya secara gratis tanpa API key resmi.
+Kategori `ai` untuk sementara kosong — silakan isi dengan integrasi AI resmi (API key resmi dari provider) kalau dibutuhkan.
+
+Dua gambar bawaan template (`src/danzz.jpg`, `src/thumbnail.jpg`) juga diganti dengan
+`public/favicon.svg` dan `public/thumbnail.svg` buatan sendiri, karena keduanya artwork
+anime milik pihak lain yang tidak terkait dengan project ini.
+
+---
+
+<div align="center">
+
+Created by **Nimzz**
+
+</div>

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>NekoAPI | Dashboard</title>
+<link id="favicon" rel="icon" href="">
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/landing/landing.css">
+</head>
+<body class="antialiased">
+
+<div id="app">
+
+<header id="site-header" class="site-header">
+<div class="header-inner">
+<button id="menu-toggle" class="icon-btn" aria-label="Buka menu" aria-expanded="false" aria-controls="sidebar">
+<i class="fa-solid fa-bars"></i>
+</button>
+<div class="header-brand">
+<img id="header-logo" alt="" class="header-logo hidden">
+<span id="header-name" class="header-name">NekoAPI</span>
+</div>
+<div class="header-actions">
+<button onclick="share()" class="icon-btn" aria-label="Bagikan">
+<i id="share-icon" class="fa-solid fa-share-nodes"></i>
+</button>
+</div>
+</div>
+</header>
+
+<div id="sidebar-overlay" class="sidebar-overlay"></div>
+
+<aside id="sidebar" class="sidebar" aria-hidden="true">
+<div class="sidebar-head">
+<div class="header-brand">
+<img id="sidebar-logo" alt="" class="header-logo hidden">
+<span id="sidebar-name" class="header-name">NekoAPI</span>
+</div>
+<button id="sidebar-close" class="icon-btn" aria-label="Tutup menu">
+<i class="fa-solid fa-xmark"></i>
+</button>
+</div>
+
+<nav class="sidebar-nav">
+<a href="/docs" class="nav-item">
+<span class="nav-icon"><i class="fa-solid fa-book"></i></span>
+<span class="nav-text">
+<span class="nav-title">Docs</span>
+<span class="nav-caption">API Reference</span>
+</span>
+<span class="nav-chevron"><i class="fa-solid fa-chevron-right"></i></span>
+</a>
+<a href="/stats" class="nav-item">
+<span class="nav-icon"><i class="fa-solid fa-chart-simple"></i></span>
+<span class="nav-text">
+<span class="nav-title">Stats</span>
+<span class="nav-caption">Usage &amp; Metrics</span>
+</span>
+<span class="nav-chevron"><i class="fa-solid fa-chevron-right"></i></span>
+</a>
+</nav>
+
+<div class="sidebar-divider"></div>
+<p class="sidebar-footer">Powered by <span class="sidebar-footer-accent">Nimzz</span> &bull; 2026</p>
+</aside>
+
+<main id="main-content" class="main-content">
+
+<div id="loader" class="loader">
+<div class="clay-shimmer loader-thumb"></div>
+<div class="clay-shimmer loader-line-lg"></div>
+<div class="clay-shimmer loader-line-sm"></div>
+<div class="clay-shimmer loader-line-xs"></div>
+</div>
+
+<div id="content" class="content hidden">
+<div class="reveal thumb-wrap">
+<img id="dash-thumb" alt="Cover" class="thumb-img">
+</div>
+<div class="reveal hero-text text-center">
+<h1 id="dash-title" class="hero-title"></h1>
+<div class="hero-underline"></div>
+<p id="dash-desc" class="hero-desc"></p>
+</div>
+<div class="reveal footer-credit">
+<p>Powered by <span class="footer-accent">Nimzz</span> &bull; 2026</p>
+</div>
+</div>
+
+</main>
+
+</div>
+
+<script src="/landing/landing.js"></script>
+</body>
+</html>

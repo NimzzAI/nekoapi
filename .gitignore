@@ -1,6 +1,0 @@
-node_modules/
-.env
-data/*.json
-*.log
-.DS_Store
-npm-debug.log*

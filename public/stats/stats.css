@@ -1,0 +1,31 @@
+/* NekoAPI — Stats. Minimalis Eropa. */
+
+*{font-family:'Inter',sans-serif}
+.font-mono{font-family:'IBM Plex Mono',monospace}
+body{background:#F6F4EF;color:#15171C}
+.blob{display:none}
+
+::-webkit-scrollbar{width:8px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(21,23,28,.28);border-radius:20px}
+
+.clay-icon-btn{width:42px;height:42px;border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:14px;background:transparent;border:1px solid rgba(21,23,28,.28);color:#15171C;transition:background .15s ease,color .15s ease;cursor:pointer}
+.clay-icon-btn:hover{background:#15171C;color:#F6F4EF}
+
+.clay-link{padding:9px 16px;border-radius:3px;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;background:#15171C;color:#F6F4EF;transition:background .15s ease}
+.clay-link:hover{background:#2B3A67}
+
+.clay-stat-card{background:#FFFFFF;border:1px solid rgba(21,23,28,.13);border-radius:3px;padding:24px;position:relative;overflow:hidden}
+
+.clay-stat-icon{width:46px;height:46px;border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:18px;color:#fff;background:var(--c)}
+
+.mem-track{height:22px;border-radius:2px;background:#E7E9F2;overflow:hidden}
+.mem-fill{height:100%;border-radius:2px;background:#2B5D3F;transition:width .6s ease;width:0%}
+.mem-fill.warn{background:#8A6A1F}
+.mem-fill.danger{background:#7A2E2E}
+
+.clay-shimmer{background:linear-gradient(100deg,rgba(21,23,28,.08) 25%,rgba(21,23,28,.02) 45%,rgba(21,23,28,.08) 65%);background-size:200% 100%;animation:clayShine 1.3s linear infinite;border-radius:2px}
+@keyframes clayShine{to{background-position:-200% 0}}
+
+.reveal{opacity:0;transform:translateY(16px);transition:opacity .45s ease,transform .45s ease}
+.reveal.in{opacity:1;transform:translateY(0)}
