@@ -73,9 +73,17 @@ fetch('/config')
         document.getElementById('sidebar-name').innerText=name;
 
         const thumbEl=document.getElementById('dash-thumb');
-        thumbEl.src=config.settings.thumbnail;
+        const thumbSrc=config.settings.thumbnail||'/thumbnail.mp4';
+        thumbEl.innerHTML=`<source src="${thumbSrc}" type="video/mp4">`;
+        thumbEl.load();
+        thumbEl.play().catch(()=>{});
         thumbEl.onerror=()=>{
-            thumbEl.src='/thumbnail.svg';
+            thumbEl.replaceWith(Object.assign(document.createElement('img'),{
+                id:'dash-thumb',
+                className:'thumb-img',
+                alt:'Cover',
+                src:'/og-image.png'
+            }));
         };
 
         const headerLogo=document.getElementById('header-logo');

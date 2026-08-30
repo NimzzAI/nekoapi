@@ -3,8 +3,20 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>NekoAPI | Dashboard</title>
-<link id="favicon" rel="icon" href="">
+<title>%%API_NAME%% | Dashboard</title>
+<meta name="description" content="%%API_DESC%%">
+<link rel="canonical" href="%%SITE_URL%%/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="%%API_NAME%%">
+<meta property="og:title" content="%%API_NAME%% | Dashboard">
+<meta property="og:description" content="%%API_DESC%%">
+<meta property="og:url" content="%%SITE_URL%%/">
+<meta property="og:image" content="%%SITE_URL%%%%OG_IMAGE%%">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="%%API_NAME%% | Dashboard">
+<meta name="twitter:description" content="%%API_DESC%%">
+<meta name="twitter:image" content="%%SITE_URL%%%%OG_IMAGE%%">
+<link id="favicon" rel="icon" type="image/png" href="%%FAVICON%%">
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -78,7 +90,7 @@
 
 <div id="content" class="content hidden">
 <div class="reveal thumb-wrap">
-<img id="dash-thumb" alt="Cover" class="thumb-img">
+<video id="dash-thumb" class="thumb-img" autoplay loop muted playsinline poster="%%OG_IMAGE%%"></video>
 </div>
 <div class="reveal hero-text text-center">
 <h1 id="dash-title" class="hero-title"></h1>

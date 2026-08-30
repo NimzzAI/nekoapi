@@ -16,5 +16,26 @@
         "description": "Custom Alias"
       }
     ]
+  },
+  {
+    "name": "Ping (JS ESM)",
+    "endpoint": "/api/tools/ping-js",
+    "filename": "ping-js",
+    "method": "GET",
+    "params": []
+  },
+  {
+    "name": "Ping (Go)",
+    "endpoint": "/api/tools/ping-go",
+    "filename": "ping-go",
+    "method": "GET",
+    "params": []
+  },
+  {
+    "name": "Ping (PHP)",
+    "endpoint": "/api/tools/ping-php",
+    "filename": "ping-php",
+    "method": "GET",
+    "params": []
   }
 ]

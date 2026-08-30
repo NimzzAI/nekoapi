@@ -5,7 +5,9 @@
     "description": "REST API gratis dan andal untuk pengembangan aplikasi modern. Dibangun dengan Node.js dan TypeScript, performa cepat, endpoint stabil, dan mudah diintegrasikan.",
     "apiVersion": "v1.0",
     "visitors": "0",
-    "favicon": "/favicon.svg",
-    "thumbnail": "/thumbnail.svg"
+    "siteUrl": "https://api-nekoapi.vercel.app",
+    "favicon": "/favicon.png",
+    "thumbnail": "/thumbnail.mp4",
+    "ogImage": "/og-image.png"
   }
 }

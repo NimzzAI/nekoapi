@@ -47,6 +47,24 @@ const findConfig = () => {
 const configPath = findConfig();
 const config = buildConfig(configPath, process.cwd());
 
+const renderPage = (filePath: string) => (req: Request, res: Response) => {
+    fs.readFile(filePath, 'utf8', (err, html) => {
+        if (err) {
+            return res.status(500).send('Internal Server Error');
+        }
+
+        const s = config.settings;
+        const out = html
+            .replace(/%%SITE_URL%%/g, s.siteUrl || `${req.protocol}://${req.get('host')}`)
+            .replace(/%%API_NAME%%/g, s.apiName || 'NekoAPI')
+            .replace(/%%API_DESC%%/g, s.description || '')
+            .replace(/%%OG_IMAGE%%/g, s.ogImage || '/og-image.png')
+            .replace(/%%FAVICON%%/g, s.favicon || '/favicon.png');
+
+        res.set('Content-Type', 'text/html').send(out);
+    });
+};
+
 const formatBytes = (bytes: number) => {
     if (bytes === 0) return '0 B';
 
@@ -138,11 +156,9 @@ app.get('/stats/data', (req: Request, res: Response) => {
     }
 });
 
-app.get('/stats', (req: Request, res: Response) => {
-    return res.sendFile(
-        path.join(process.cwd(), 'public', 'stats', 'stats.html')
-    );
-});
+app.get('/stats', renderPage(
+    path.join(process.cwd(), 'public', 'stats', 'stats.html')
+));
 
 app.get('/config', (req: Request, res: Response) => {
     try {
@@ -158,17 +174,13 @@ app.get('/config', (req: Request, res: Response) => {
     }
 });
 
-app.get('/', (req: Request, res: Response) => {
-    return res.sendFile(
-        path.join(process.cwd(), 'public', 'landing', 'landing.html')
-    );
-});
+app.get('/', renderPage(
+    path.join(process.cwd(), 'public', 'landing', 'landing.html')
+));
 
-app.get('/docs', (req: Request, res: Response) => {
-    return res.sendFile(
-        path.join(process.cwd(), 'public', 'docs', 'docs.html')
-    );
-});
+app.get('/docs', renderPage(
+    path.join(process.cwd(), 'public', 'docs', 'docs.html')
+));
 
 app.use((req: Request, res: Response) => {
     if (req.accepts('html')) {

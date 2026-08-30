@@ -3,7 +3,18 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>NekoAPI | Documentation</title>
+<title>%%API_NAME%% | Documentation</title>
+<meta name="description" content="Dokumentasi endpoint %%API_NAME%%.">
+<link rel="canonical" href="%%SITE_URL%%/docs">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="%%API_NAME%%">
+<meta property="og:title" content="%%API_NAME%% | Documentation">
+<meta property="og:description" content="%%API_DESC%%">
+<meta property="og:url" content="%%SITE_URL%%/docs">
+<meta property="og:image" content="%%SITE_URL%%%%OG_IMAGE%%">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="%%SITE_URL%%%%OG_IMAGE%%">
+<link id="favicon" rel="icon" type="image/png" href="%%FAVICON%%">
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -35,7 +46,10 @@
 <aside id="sidebar" class="sidebar" aria-hidden="true">
     <div class="flex items-center justify-between pb-4 mb-4 border-b border-dashed" style="border-color:rgba(30,27,75,.14)">
         <div>
-            <h2 class="font-black text-base" style="color:#15171C">Endpoints</h2>
+            <h2 class="font-black text-base flex items-center gap-2" style="color:#15171C">
+                <img src="%%FAVICON%%" alt="" class="w-5 h-5">
+                Endpoints
+            </h2>
             <span class="text-[10px] font-bold tracking-widest" style="color:#8A8D93">PILIH UNTUK MENCOBA</span>
         </div>
 
@@ -57,7 +71,7 @@
     </div>
 
     <div class="pt-3 mt-3 border-t border-dashed text-center" style="border-color:rgba(30,27,75,.16)">
-        <p class="font-mono text-[10px] font-semibold uppercase tracking-widest" style="color:#8A8D93">
+        <p class="font-mono text-[10px] font-semibold tracking-wide" style="color:#8A8D93">
             Powered by <span style="color:#2B3A67">Nimzz</span> &bull; 2026
         </p>
     </div>
@@ -135,6 +149,66 @@
     </section>
 
 </main>
+
+<div id="ad-popup-overlay" class="hidden fixed inset-0 z-[110] items-center justify-center p-5" style="background:rgba(21,23,28,.55)">
+    <div id="ad-popup-card" class="w-full opacity-0" style="max-width:380px;transform:translateY(10px) scale(.97);transition:opacity .25s ease,transform .25s ease">
+        <div style="background:#FFFFFF;border:1px solid rgba(21,23,28,.13);border-radius:3px;overflow:hidden">
+
+            <div class="relative flex items-center justify-center" style="background:#15171C;padding:34px 24px">
+                <button
+                    onclick="closeAdPopup()"
+                    class="absolute top-3 right-3 w-8 h-8 flex items-center justify-center"
+                    style="background:rgba(246,244,239,.1);border-radius:2px;color:#F6F4EF"
+                    title="Tutup"
+                >
+                    <i class="fa-solid fa-xmark text-sm"></i>
+                </button>
+                <img src="%%FAVICON%%" alt="" class="w-14 h-14">
+            </div>
+
+            <div class="p-6 text-center">
+                <h3 class="font-semibold text-xl mb-2" style="font-family:'Fraunces',serif;color:#15171C">
+                    Selamat Datang di NekoAPI
+                </h3>
+                <p class="text-sm mb-5" style="color:#55585F;line-height:1.6">
+                    REST API gratis dengan puluhan endpoint — download, maker, search, tools,
+                    dan lainnya. Sekarang mendukung router multi-bahasa: TypeScript, JavaScript,
+                    Go, dan PHP sekaligus.
+                </p>
+
+                <div class="flex items-center justify-center gap-2 mb-5 text-left" style="font-size:12.5px;color:#55585F">
+                    <div class="w-full">
+                        <div class="flex items-center gap-2 py-1.5">
+                            <i class="fa-solid fa-shield-halved" style="color:#2B3A67;width:16px"></i>
+                            <span>Rate limit per IP, gratis tanpa API key</span>
+                        </div>
+                        <div class="flex items-center gap-2 py-1.5">
+                            <i class="fa-solid fa-code" style="color:#2B3A67;width:16px"></i>
+                            <span>Coba langsung tiap endpoint dari browser</span>
+                        </div>
+                        <div class="flex items-center gap-2 py-1.5">
+                            <i class="fa-solid fa-download" style="color:#2B3A67;width:16px"></i>
+                            <span>Hasil media (gambar/video) bisa langsung diunduh</span>
+                        </div>
+                    </div>
+                </div>
+
+                <button
+                    onclick="closeAdPopup()"
+                    class="w-full py-3 font-semibold text-sm"
+                    style="background:#15171C;color:#F6F4EF;border-radius:3px"
+                >
+                    Mulai Jelajahi
+                </button>
+
+                <p class="mt-4" style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.06em;color:#8A8D93">
+                    Dikembangkan oleh <span style="color:#2B3A67">Nimzz</span>
+                </p>
+            </div>
+
+        </div>
+    </div>
+</div>
 
 <div id="custom-toast" class="fixed bottom-6 right-6 z-[100] transform translate-y-32 opacity-0 transition-all duration-300">
     <div class="flex items-center gap-3 px-5 py-3.5" style="background:#15171C;border-radius:3px">

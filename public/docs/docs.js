@@ -44,6 +44,7 @@ async function init() {
         initDevice();
         await bootTerminal(globalConfig);
         setSearch();
+        openAdPopup();
     } catch (e) {
         document.getElementById("term-logs").innerHTML = `
             <span class="text-red-400 font-bold">SYSTEM FAILURE</span><br>
@@ -51,6 +52,47 @@ async function init() {
         `;
     }
 }
+
+function openAdPopup() {
+    if (sessionStorage.getItem("nekoapi_popup_seen")) return;
+
+    const overlay = document.getElementById("ad-popup-overlay");
+    const card = document.getElementById("ad-popup-card");
+    if (!overlay || !card) return;
+
+    overlay.classList.remove("hidden");
+    overlay.classList.add("flex");
+
+    requestAnimationFrame(() => {
+        card.style.opacity = "1";
+        card.style.transform = "translateY(0) scale(1)";
+    });
+}
+
+window.closeAdPopup = () => {
+    const overlay = document.getElementById("ad-popup-overlay");
+    const card = document.getElementById("ad-popup-card");
+    if (!overlay || !card) return;
+
+    card.style.opacity = "0";
+    card.style.transform = "translateY(10px) scale(.97)";
+
+    setTimeout(() => {
+        overlay.classList.add("hidden");
+        overlay.classList.remove("flex");
+    }, 200);
+
+    sessionStorage.setItem("nekoapi_popup_seen", "1");
+};
+
+document.addEventListener("DOMContentLoaded", () => {
+    const overlay = document.getElementById("ad-popup-overlay");
+    if (overlay) {
+        overlay.addEventListener("click", e => {
+            if (e.target === overlay) window.closeAdPopup();
+        });
+    }
+});
 
 function messeg(msg) {
     const toast = document.getElementById("custom-toast");
@@ -819,20 +861,6 @@ window.backToIntro = () => {
 function renderEndpointCard(route, id) {
     const ev = document.getElementById("endpoint-view");
 
-    let copyUrl = route.endpoint;
-
-    if (
-        route.method === "GET" &&
-        route.params &&
-        route.params.length > 0
-    ) {
-        copyUrl =
-            `${route.endpoint}?` +
-            route.params
-                .map(param => `${param.name}=`)
-                .join("&");
-    }
-
     let inputs = "";
 
     if (route.params?.length) {
@@ -938,7 +966,7 @@ function renderEndpointCard(route, id) {
                 </button>
 
                 <button
-                    onclick="copy('${copyUrl}')"
+                    onclick="copyEndpointUrl('${id}','${route.endpoint}','${route.method}')"
                     class="clay-icon-btn"
                     title="Copy URL"
                 >
@@ -1131,6 +1159,30 @@ window.copy = text => {
 
     messeg("ENDPOINT COPIED");
     terminalLog(`Copied URL: ${text}`);
+};
+
+window.copyEndpointUrl = (id, endpoint, method) => {
+    const params = {};
+
+    document
+        .querySelectorAll(`[id^="input-${id}-"]`)
+        .forEach(input => {
+            if (input.value) {
+                params[
+                    input.id.split(`input-${id}-`)[1]
+                ] = input.value;
+            }
+        });
+
+    const url =
+        endpoint +
+        (
+            method === "GET" && Object.keys(params).length
+                ? "?" + new URLSearchParams(params)
+                : ""
+        );
+
+    window.copy(url);
 };
 
 window.copyRes = id => {

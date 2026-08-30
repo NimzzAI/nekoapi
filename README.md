@@ -43,6 +43,7 @@ Project ini dirancang dengan struktur modular sehingga endpoint dapat ditambahka
 | Feature | Description |
 | :--- | :--- |
 | **TypeScript** | Static typing untuk membuat kode lebih aman dan mudah dirawat. |
+| **Multi-Language Router** | Endpoint bisa ditulis pakai TypeScript, JavaScript (CommonJS/ESM), Go, atau PHP — dicampur bebas dalam satu project. |
 | **Dynamic Routing** | Endpoint didaftarkan melalui file JSON. |
 | **Auto Loader** | Router otomatis dimuat berdasarkan konfigurasi endpoint. |
 | **Hot Reload** | Config, endpoint, dan router dapat dimuat ulang saat development. |
@@ -103,8 +104,9 @@ Rate limiter dipasang secara global sehingga berlaku untuk seluruh endpoint yang
 ├── vercel.json
 │
 ├── public
-│   ├── favicon.svg
-│   ├── thumbnail.svg
+│   ├── favicon.png
+│   ├── og-image.png
+│   ├── thumbnail.mp4
 │   │
 │   ├── docs
 │   │   ├── docs.css
@@ -136,7 +138,10 @@ Rate limiter dipasang secara global sehingga berlaku untuk seluruh endpoint yang
 │   │   └── yts.ts
 │   │
 │   └── tools
-│       └── shorturl.ts
+│       ├── shorturl.ts
+│       ├── ping-js.mjs
+│       ├── ping-go.go
+│       └── ping-php.php
 │
 └── src
     ├── autoload.ts
@@ -367,6 +372,82 @@ Endpoint akan otomatis tersedia:
 ```http
 GET /api/games/tebak?level=1
 ```
+
+---
+
+## Multi-Language Endpoints
+
+Router tidak cuma jalan dengan TypeScript. Loader mendeteksi file berdasarkan
+`filename` di JSON endpoint dan mencarinya berurutan dengan ekstensi:
+`.ts` → `.js` → `.mjs` → `.go` → `.php`. Bahasa apa pun bisa dicampur bebas
+dalam satu folder kategori yang sama — `router/tools/` misalnya sudah berisi
+contoh keempatnya sekaligus (`shorturl.ts`, `ping-js.mjs`, `ping-go.go`,
+`ping-php.php`).
+
+Konfigurasi endpoint (`src/endpoints/*.json`) tetap sama persis di semua
+bahasa — yang berbeda cuma isi file router-nya.
+
+### JavaScript (ES Module)
+
+Gunakan ekstensi `.js` yang biasa (bekerja seperti sekarang, format
+CommonJS) di project ini karena `package.json` tidak diset
+`"type": "module"`. Untuk menulis pakai `import`/`export` murni, simpan
+sebagai **`.mjs`** — loader akan meng-import-nya secara async otomatis.
+Polanya identik dengan `.ts`, tinggal hilangkan tipe TypeScript-nya:
+
+```javascript
+// router/tools/contoh.mjs
+import axios from 'axios';
+
+export default async function contohHandler(req, res) {
+    res.json({ status: true, result: 'halo dari ES module' });
+}
+```
+
+### Go
+
+Loader meng-compile file `.go` sekali (`go build`), hasil binary-nya
+di-cache dan dipakai ulang untuk request berikutnya — bukan compile
+ulang tiap request. Endpoint Go **wajib**:
+
+- Baca input dari **stdin**, format JSON: `{"query": {...}, "body": {...}}`
+- Tulis output ke **stdout**, satu JSON valid (jadi response API)
+- `exit 0` kalau sukses, exit code lain dianggap error (stderr dibaca
+  sebagai pesan error)
+
+Lihat `router/tools/ping-go.go` untuk contoh lengkap. Test manual di luar
+server:
+
+```bash
+go build -o ping-go.bin router/tools/ping-go.go
+echo '{"query":{},"body":{}}' | ./ping-go.bin
+```
+
+Butuh `go` terinstal di server (`go version` harus jalan). Kalau tidak
+ada, endpoint `.go` otomatis di-skip dengan response `501` yang jelas —
+server tetap jalan normal, endpoint lain tidak terganggu.
+
+### PHP
+
+Sama seperti Go tapi tanpa compile — dijalankan langsung lewat
+`php file.php` tiap request, dengan kontrak stdin/stdout yang sama persis
+(lihat `router/tools/ping-php.php`):
+
+```bash
+echo '{"query":{},"body":{}}' | php router/tools/ping-php.php
+```
+
+Butuh `php` terinstal di server (`php --version` harus jalan). Sama seperti
+Go, kalau tidak ada, endpoint di-skip otomatis dengan response `501`.
+
+### Batasan di Vercel
+
+Endpoint `.go` dan `.php` **tidak akan jalan** kalau di-deploy ke Vercel
+serverless — runtime Go/PHP tidak tersedia di environment Node serverless
+function, dan compile Go saat cold-start juga tidak didukung. Keduanya
+cuma jalan di server yang kamu kontrol penuh prosesnya (VPS lewat PM2,
+misalnya). TypeScript, `.js`, dan `.mjs` tetap jalan normal di Vercel
+seperti biasa.
 
 ---
 

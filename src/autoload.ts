@@ -4,6 +4,7 @@
  */
  
 import { Application, Request, Response, NextFunction } from 'express';
+import { spawn, execSync } from 'child_process';
 import fs from 'fs';
 import path from 'path';
 import { logRouterRequest } from './logger';
@@ -53,8 +54,9 @@ const getRouteFile = (category: string, filename: string) => {
         path.join(process.cwd(), 'dist', 'router', category)
     ];
 
+    // Urutan pencarian: TypeScript/JS (CommonJS) dulu, lalu ESM (.mjs), lalu Go, lalu PHP.
     for (const folder of folders) {
-        for (const extension of ['.ts', '.js']) {
+        for (const extension of ['.ts', '.js', '.mjs', '.go', '.php']) {
             const filePath = path.join(folder, `${filename}${extension}`);
             if (fs.existsSync(filePath)) return filePath;
         }
@@ -65,6 +67,139 @@ const getRouteFile = (category: string, filename: string) => {
 
 const getRouteKey = (route: any) =>
     `${String(route.method).toLowerCase()}:${route.endpoint}`;
+
+// ============================================================
+// Dukungan multi-bahasa: .go dan .php dijalankan sebagai subprocess.
+// Input dikirim lewat stdin berupa JSON `{query, body}`, endpoint di
+// Go/PHP wajib print SATU baris JSON ke stdout sebagai response.
+// Catatan: ini butuh runtime `go`/`php` terpasang di server (VPS/PM2).
+// Di Vercel serverless, keduanya TIDAK tersedia — endpoint Go/PHP akan
+// otomatis dilewati dengan pesan yang jelas, bukan bikin server crash.
+// ============================================================
+
+const runtimeAvailability = new Map<string, boolean>();
+const goBinaryCache = new Map<string, string>();
+
+const isRuntimeAvailable = (cmd: string): boolean => {
+    if (runtimeAvailability.has(cmd)) return runtimeAvailability.get(cmd)!;
+
+    let available = false;
+    try {
+        execSync(`${cmd} version`, { stdio: 'ignore', timeout: 5000 });
+        available = true;
+    } catch {
+        available = false;
+    }
+
+    runtimeAvailability.set(cmd, available);
+    return available;
+};
+
+const runSubprocess = (cmd: string, args: string[], inputJson: string): Promise<string> => {
+    return new Promise((resolve, reject) => {
+        const proc = spawn(cmd, args, { timeout: 15000 });
+        let stdout = '';
+        let stderr = '';
+
+        proc.stdout.on('data', (chunk) => { stdout += chunk; });
+        proc.stderr.on('data', (chunk) => { stderr += chunk; });
+        proc.on('error', (err) => reject(err));
+        proc.on('close', (code) => {
+            if (code !== 0) {
+                return reject(new Error(stderr.trim() || `Process exited with code ${code}`));
+            }
+            resolve(stdout.trim());
+        });
+
+        proc.stdin.write(inputJson);
+        proc.stdin.end();
+    });
+};
+
+const compileGoBinary = async (filePath: string): Promise<string> => {
+    const cached = goBinaryCache.get(filePath);
+    if (cached && fs.existsSync(cached)) return cached;
+
+    const binPath = filePath.replace(/\.go$/, process.platform === 'win32' ? '.exe' : '.bin');
+
+    await new Promise<void>((resolve, reject) => {
+        const build = spawn('go', ['build', '-o', binPath, filePath]);
+        let stderr = '';
+        build.stderr.on('data', (chunk) => { stderr += chunk; });
+        build.on('error', reject);
+        build.on('close', (code) => {
+            code === 0 ? resolve() : reject(new Error(stderr.trim() || 'go build failed'));
+        });
+    });
+
+    goBinaryCache.set(filePath, binPath);
+    return binPath;
+};
+
+/** Handler untuk endpoint .go / .php — dijalankan sebagai subprocess terpisah. */
+const createSubprocessHandler = (filePath: string, ext: '.go' | '.php') => {
+    return async (req: Request, res: Response) => {
+        const runtimeCmd = ext === '.go' ? 'go' : 'php';
+
+        if (!isRuntimeAvailable(runtimeCmd)) {
+            return res.status(501).json({
+                status: false,
+                message: `Runtime '${runtimeCmd}' tidak tersedia di server ini. Endpoint ${ext} butuh server dengan ${runtimeCmd} terinstal (tidak berjalan di Vercel serverless).`
+            });
+        }
+
+        const input = JSON.stringify({ query: req.query, body: req.body || {} });
+
+        try {
+            let output: string;
+
+            if (ext === '.go') {
+                const binPath = await compileGoBinary(filePath);
+                output = await runSubprocess(binPath, [], input);
+            } else {
+                output = await runSubprocess('php', [filePath], input);
+            }
+
+            let parsed: any;
+            try {
+                parsed = JSON.parse(output);
+            } catch {
+                throw new Error(`Output ${ext} bukan JSON valid: ${output.slice(0, 200)}`);
+            }
+
+            res.json(parsed);
+        } catch (error: any) {
+            res.status(500).json({
+                status: false,
+                message: error.message || `Gagal menjalankan endpoint ${ext}`
+            });
+        }
+    };
+};
+
+/** Handler untuk endpoint .mjs — di-import secara async & di-cache setelah load pertama. */
+const createEsmHandler = (filePath: string) => {
+    let cached: Function | null = null;
+    let loadError: Error | null = null;
+
+    return async (req: Request, res: Response, next: NextFunction) => {
+        if (!cached && !loadError) {
+            try {
+                const mod: any = await import(`file://${filePath}?t=${Date.now()}`);
+                const fn = mod.default || mod;
+                if (typeof fn !== 'function') throw new Error('Module tidak export function default');
+                cached = fn;
+            } catch (error: any) {
+                loadError = error;
+            }
+        }
+
+        if (loadError) return next(loadError);
+        if (!cached) return next(new Error('ESM handler gagal dimuat'));
+
+        return cached(req, res, next);
+    };
+};
 
 const registerRoute = (
     route: any,
@@ -94,11 +229,20 @@ const registerRoute = (
         return;
     }
 
-    try {
-        delete require.cache[require.resolve(filePath)];
+    const ext = path.extname(filePath);
 
-        const routeModule = require(filePath);
-        const handler = routeModule.default || routeModule;
+    try {
+        let handler: Function;
+
+        if (ext === '.go' || ext === '.php') {
+            handler = createSubprocessHandler(filePath, ext);
+        } else if (ext === '.mjs') {
+            handler = createEsmHandler(filePath);
+        } else {
+            delete require.cache[require.resolve(filePath)];
+            const routeModule = require(filePath);
+            handler = routeModule.default || routeModule;
+        }
 
         if (typeof handler !== 'function') {
             console.error(`[!] Invalid handler: ${filePath}`);
@@ -128,7 +272,7 @@ const registerRoute = (
         (targetApp as any)[method](route.endpoint, routeHandler);
         registeredRoutes.add(routeKey);
 
-        console.log(`[+] Loaded: ${route.method} ${route.endpoint} -> ${path.basename(filePath)}`);
+        console.log(`[+] Loaded (${ext}): ${route.method} ${route.endpoint} -> ${path.basename(filePath)}`);
     } catch (error) {
         console.error(`[!] Failed to load ${route.endpoint}:`, error);
     }
