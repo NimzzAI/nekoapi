@@ -1,6 +1,5 @@
 import { Request, Response } from 'express';
 import axios from 'axios';
-import qs from 'qs';
 import * as cheerio from 'cheerio';
 
 async function getFdownTokens() {
@@ -23,12 +22,12 @@ async function getFdownTokens() {
 async function facebookDl(url: string) {
     try {
         const tokens = await getFdownTokens();
-        const postData = qs.stringify({
+        const postData = new URLSearchParams({
             'URLz': url,
             'token_v': tokens.token_v,
             'token_c': tokens.token_c,
             'token_h': tokens.token_h
-        });
+        }).toString();
 
         const { data } = await axios.post('https://fdown.net/download.php', postData, {
             headers: {

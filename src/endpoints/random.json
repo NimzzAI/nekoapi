@@ -5,5 +5,28 @@
     "filename": "blue_archive",
     "method": "GET",
     "params": []
+  },
+  {
+    "name": "Random Quotes",
+    "endpoint": "/api/random/quotes",
+    "filename": "quotes",
+    "method": "GET",
+    "params": [
+      {
+        "name": "category",
+        "required": false,
+        "description": "Kategori quote (motivation, anime, life, love, wisdom)"
+      },
+      {
+        "name": "lang",
+        "required": false,
+        "description": "Bahasa quote (id, en)"
+      },
+      {
+        "name": "author",
+        "required": false,
+        "description": "Filter berdasarkan nama tokoh / karakter anime"
+      }
+    ]
   }
 ]

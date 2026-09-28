@@ -1,0 +1,8 @@
+{
+  "name": "NekoAPI",
+  "description": "REST API service built with Node.js and Express featuring endpoints for media downloading, image generation, search, and web tools.",
+  "permissions": [],
+  "capabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

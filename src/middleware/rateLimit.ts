@@ -6,13 +6,9 @@ import { Request, Response, NextFunction } from "express";
 import { Redis } from "@upstash/redis";
 import { logRateLimit } from "../logger";
 
-const MAX_REQUESTS = Number(process.env.RATE_LIMIT_MAX_REQUESTS);
-const WINDOW_TIME = Number(process.env.RATE_LIMIT_WINDOW);
-const BAN_TIME = Number(process.env.RATE_LIMIT_BAN_TIME);
-
-if (!MAX_REQUESTS || !WINDOW_TIME || !BAN_TIME) {
-  throw new Error("Rate limit configuration is missing in .env");
-}
+const MAX_REQUESTS = Number(process.env.RATE_LIMIT_MAX_REQUESTS) || 100;
+const WINDOW_TIME = Number(process.env.RATE_LIMIT_WINDOW) || 60000;
+const BAN_TIME = Number(process.env.RATE_LIMIT_BAN_TIME) || 60000;
 
 type IpData = {
   requests: number[];

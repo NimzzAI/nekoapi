@@ -4,12 +4,13 @@
   "main": "dist/index.js",
   "scripts": {
     "clean": "rm -rf dist",
+    "lint": "tsc --noEmit",
     "prebuild": "npm run clean",
     "build": "tsc && npm run copy-assets",
     "copy-assets": "mkdir -p dist/src/endpoints dist/router && cp -r src/*.json src/*.jpg dist/src/ 2>/dev/null || true && cp -r src/endpoints/*.json dist/src/endpoints/ 2>/dev/null || true && cp -r public dist/ 2>/dev/null || true",
     "start": "node dist/index.js",
-    "dev": "ts-node index.ts",
-    "dev:watch": "nodemon --exec ts-node index.ts",
+    "dev": "tsx watch index.ts",
+    "dev:watch": "tsx watch index.ts",
     "pm2": "pm2 start index.ts --name nekoapi --interpreter node --node-args=\"-r ts-node/register\" && pm2 save"
   },
   "dependencies": {
@@ -35,6 +36,7 @@
     "@types/node": "^20.10.0",
     "nodemon": "^3.1.14",
     "ts-node": "^10.9.1",
+    "tsx": "^4.23.15",
     "typescript": "^5.3.2"
   }
 }
