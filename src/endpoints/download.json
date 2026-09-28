@@ -1,23 +1,14 @@
 [
   {
-    "name": "Download Hub",
-    "endpoint": "/api/download",
-    "filename": "hub",
-    "method": "GET",
-    "description": "Pusat layanan pengunduh media sosial dan status extractor.",
-    "params": []
-  },
-  {
     "name": "Facebook Downloader",
     "endpoint": "/api/download/facebook",
     "filename": "facebook",
     "method": "GET",
-    "description": "Unduh video Facebook publik dalam format SD dan HD.",
     "params": [
       {
         "name": "url",
         "required": true,
-        "description": "Tautan video Facebook (contoh: https://www.facebook.com/...)"
+        "description": "Facebook URL"
       }
     ]
   }

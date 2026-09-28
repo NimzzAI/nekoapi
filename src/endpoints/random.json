@@ -1,18 +1,9 @@
 [
   {
-    "name": "Random Hub",
-    "endpoint": "/api/random",
-    "filename": "hub",
-    "method": "GET",
-    "description": "Portal utama konten acak dengan metadata lengkap dan variasi endpoint.",
-    "params": []
-  },
-  {
     "name": "Random Blue Archive",
     "endpoint": "/api/random/blue_archive",
     "filename": "blue_archive",
     "method": "GET",
-    "description": "Gambar ilustrasi karakter Blue Archive acak resolusi tinggi.",
     "params": []
   },
   {
@@ -20,7 +11,6 @@
     "endpoint": "/api/random/quotes",
     "filename": "quotes",
     "method": "GET",
-    "description": "Koleksi quote acak dengan filter kategori dan bahasa.",
     "params": [
       {
         "name": "category",

@@ -1,28 +1,19 @@
 [
   {
-    "name": "Tools Hub",
-    "endpoint": "/api/tools",
-    "filename": "hub",
-    "method": "GET",
-    "description": "Status sistem, performa server, diagnostik latensi dan utilitas praktis.",
-    "params": []
-  },
-  {
     "name": "Short URL",
     "endpoint": "/api/tools/shorturl",
     "filename": "shorturl",
     "method": "GET",
-    "description": "Pemendek tautan cepat menggunakan TinyURL dengan dukungan custom alias.",
     "params": [
       {
         "name": "url",
         "required": true,
-        "description": "Original URL (contoh: https://example.com)"
+        "description": "Original URL"
       },
       {
         "name": "alias",
         "required": false,
-        "description": "Custom Alias pilihan"
+        "description": "Custom Alias"
       }
     ]
   },
@@ -31,7 +22,6 @@
     "endpoint": "/api/tools/ping-js",
     "filename": "ping-js",
     "method": "GET",
-    "description": "Cek konektivitas dan informasi runtime JavaScript ESM.",
     "params": []
   },
   {
@@ -39,7 +29,6 @@
     "endpoint": "/api/tools/ping-go",
     "filename": "ping-go",
     "method": "GET",
-    "description": "Cek runtime Go subprocess.",
     "params": []
   },
   {
@@ -47,7 +36,6 @@
     "endpoint": "/api/tools/ping-php",
     "filename": "ping-php",
     "method": "GET",
-    "description": "Cek runtime PHP subprocess.",
     "params": []
   }
 ]
