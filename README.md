@@ -140,8 +140,8 @@ Rate limiter dipasang secara global sehingga berlaku untuk seluruh endpoint yang
 │   └── tools
 │       ├── shorturl.ts
 │       ├── ping-js.mjs
-│       ├── ping-go.go
-│       └── ping-php.php
+│       ├── base64.ts
+│       └── hash.ts
 │
 └── src
     ├── autoload.ts
@@ -380,9 +380,8 @@ GET /api/games/tebak?level=1
 Router tidak cuma jalan dengan TypeScript. Loader mendeteksi file berdasarkan
 `filename` di JSON endpoint dan mencarinya berurutan dengan ekstensi:
 `.ts` → `.js` → `.mjs` → `.go` → `.php`. Bahasa apa pun bisa dicampur bebas
-dalam satu folder kategori yang sama — `router/tools/` misalnya sudah berisi
-contoh keempatnya sekaligus (`shorturl.ts`, `ping-js.mjs`, `ping-go.go`,
-`ping-php.php`).
+dalam satu folder kategori yang sama — `router/tools/` misalnya berisi
+`shorturl.ts`, `ping-js.mjs`, `base64.ts`, dan `hash.ts`.
 
 Konfigurasi endpoint (`src/endpoints/*.json`) tetap sama persis di semua
 bahasa — yang berbeda cuma isi file router-nya.

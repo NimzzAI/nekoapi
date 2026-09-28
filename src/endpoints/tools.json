@@ -25,17 +25,39 @@
     "params": []
   },
   {
-    "name": "Ping (Go)",
-    "endpoint": "/api/tools/ping-go",
-    "filename": "ping-go",
+    "name": "Base64 Converter",
+    "endpoint": "/api/tools/base64",
+    "filename": "base64",
     "method": "GET",
-    "params": []
+    "params": [
+      {
+        "name": "text",
+        "required": false,
+        "description": "Teks yang ingin di-encode atau di-decode"
+      },
+      {
+        "name": "mode",
+        "required": false,
+        "description": "Pilihan: encode atau decode (default: encode)"
+      }
+    ]
   },
   {
-    "name": "Ping (PHP)",
-    "endpoint": "/api/tools/ping-php",
-    "filename": "ping-php",
+    "name": "Hash Generator",
+    "endpoint": "/api/tools/hash",
+    "filename": "hash",
     "method": "GET",
-    "params": []
+    "params": [
+      {
+        "name": "text",
+        "required": false,
+        "description": "Teks yang ingin di-hash"
+      },
+      {
+        "name": "type",
+        "required": false,
+        "description": "Pilihan algoritma: md5, sha1, sha256, sha512, all (default: all)"
+      }
+    ]
   }
 ]
