@@ -1,0 +1,10 @@
+[
+  {
+    "name": "Random Waifu",
+    "endpoint": "/api/waifu",
+    "filename": "waifu",
+    "method": "GET",
+    "description": "Dapatkan gambar anime waifu acak resolusi tinggi lengkap dengan informasi artis dan sumber.",
+    "params": []
+  }
+]

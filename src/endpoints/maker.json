@@ -1,14 +1,23 @@
 [
   {
+    "name": "Maker Hub",
+    "endpoint": "/api/maker",
+    "filename": "hub",
+    "method": "GET",
+    "description": "Layanan pembuatan gambar dan stiker kreatif secara dinamis.",
+    "params": []
+  },
+  {
     "name": "Brat Generator",
     "endpoint": "/api/maker/brat",
     "filename": "brat",
     "method": "GET",
+    "description": "Hasilkan gambar tipografi album cover Brat khas lime green dengan teks kustom.",
     "params": [
       {
         "name": "text",
         "required": true,
-        "description": "Text"
+        "description": "Teks yang ingin ditampilkan (contoh: hello world)"
       }
     ]
   }

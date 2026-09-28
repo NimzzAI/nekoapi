@@ -7,6 +7,8 @@
       "config": {
         "includeFiles": [
           "src/config.json",
+          "src/endpoints/**",
+          "router/**",
           "public/**"
         ]
       }

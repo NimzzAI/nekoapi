@@ -1,111 +1,381 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" class="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>%%API_NAME%% | Dashboard</title>
+<title>%%API_NAME%% | Modern REST API Platform</title>
 <meta name="description" content="%%API_DESC%%">
 <link rel="canonical" href="%%SITE_URL%%/">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="%%API_NAME%%">
-<meta property="og:title" content="%%API_NAME%% | Dashboard">
+<meta property="og:title" content="%%API_NAME%% | Modern REST API Platform">
 <meta property="og:description" content="%%API_DESC%%">
 <meta property="og:url" content="%%SITE_URL%%/">
 <meta property="og:image" content="%%SITE_URL%%%%OG_IMAGE%%">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="%%API_NAME%% | Dashboard">
+<meta name="twitter:title" content="%%API_NAME%% | Modern REST API Platform">
 <meta name="twitter:description" content="%%API_DESC%%">
 <meta name="twitter:image" content="%%SITE_URL%%%%OG_IMAGE%%">
 <link id="favicon" rel="icon" type="image/png" href="%%FAVICON%%">
 <script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    darkMode: 'class',
+    theme: {
+      extend: {
+        fontFamily: {
+          sans: ['Inter', 'system-ui', 'sans-serif'],
+          mono: ['JetBrains Mono', 'IBM Plex Mono', 'monospace'],
+        },
+        colors: {
+          brand: {
+            50: '#eef2ff',
+            500: '#6366f1',
+            600: '#4f46e5',
+            700: '#4338ca',
+          }
+        }
+      }
+    }
+  }
+</script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/landing/landing.css">
 </head>
-<body class="antialiased">
+<body class="bg-zinc-50 text-zinc-900 dark:bg-[#090b10] dark:text-zinc-100 min-h-screen flex flex-col font-sans transition-colors duration-200 antialiased selection:bg-indigo-500/20 selection:text-indigo-400">
 
-<div id="app">
+  <!-- Navbar -->
+  <header class="sticky top-0 z-40 w-full border-b border-zinc-200/80 dark:border-zinc-800/80 bg-white/80 dark:bg-[#090b10]/80 backdrop-blur-md transition-colors">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <a href="/" class="flex items-center gap-2.5 group">
+          <img id="nav-logo" src="%%FAVICON%%" alt="Logo" class="w-8 h-8 rounded-lg object-cover ring-1 ring-zinc-200 dark:ring-zinc-800 transition-transform group-hover:scale-105">
+          <div class="flex items-center gap-2">
+            <span id="nav-name" class="font-bold text-lg tracking-tight font-mono text-zinc-900 dark:text-white">%%API_NAME%%</span>
+            <span class="px-2 py-0.5 text-[10px] font-mono font-semibold rounded-full bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20">v1.0</span>
+          </div>
+        </a>
+      </div>
 
-<header id="site-header" class="site-header">
-<div class="header-inner">
-<button id="menu-toggle" class="icon-btn" aria-label="Buka menu" aria-expanded="false" aria-controls="sidebar">
-<i class="fa-solid fa-bars"></i>
-</button>
-<div class="header-brand">
-<img id="header-logo" alt="" class="header-logo hidden">
-<span id="header-name" class="header-name">NekoAPI</span>
-</div>
-<div class="header-actions">
-<button onclick="share()" class="icon-btn" aria-label="Bagikan">
-<i id="share-icon" class="fa-solid fa-share-nodes"></i>
-</button>
-</div>
-</div>
-</header>
+      <!-- Desktop Nav -->
+      <nav class="hidden md:flex items-center gap-6 text-sm font-medium text-zinc-600 dark:text-zinc-400">
+        <a href="#categories" class="hover:text-zinc-900 dark:hover:text-white transition-colors">Categories</a>
+        <a href="#tester" class="hover:text-zinc-900 dark:hover:text-white transition-colors">API Tester</a>
+        <a href="/docs" class="hover:text-zinc-900 dark:hover:text-white transition-colors flex items-center gap-1.5">
+          <span>Docs</span>
+          <i class="fa-solid fa-arrow-up-right-from-square text-[10px] opacity-60"></i>
+        </a>
+        <a href="/stats" class="hover:text-zinc-900 dark:hover:text-white transition-colors flex items-center gap-1.5">
+          <span>Stats</span>
+          <i class="fa-solid fa-chart-simple text-[11px] opacity-60"></i>
+        </a>
+        <a href="https://github.com/NimzzAI/nekoapi" target="_blank" rel="noopener noreferrer" class="hover:text-zinc-900 dark:hover:text-white transition-colors">
+          <i class="fa-brands fa-github text-lg"></i>
+        </a>
+      </nav>
 
-<div id="sidebar-overlay" class="sidebar-overlay"></div>
+      <!-- Right Actions: Status & Theme Toggle -->
+      <div class="flex items-center gap-3">
+        <div id="live-status-badge" class="hidden sm:flex items-center gap-2 px-3 py-1 text-xs font-mono rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+          <span id="status-text">Online</span>
+          <span id="latency-text" class="text-zinc-400 dark:text-zinc-500 text-[11px]">· 24ms</span>
+        </div>
 
-<aside id="sidebar" class="sidebar" aria-hidden="true">
-<div class="sidebar-head">
-<div class="header-brand">
-<img id="sidebar-logo" alt="" class="header-logo hidden">
-<span id="sidebar-name" class="header-name">NekoAPI</span>
-</div>
-<button id="sidebar-close" class="icon-btn" aria-label="Tutup menu">
-<i class="fa-solid fa-xmark"></i>
-</button>
-</div>
+        <button id="theme-toggle" aria-label="Toggle Theme" class="w-9 h-9 rounded-lg border border-zinc-200 dark:border-zinc-800 flex items-center justify-center text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800/60 transition-colors">
+          <i id="theme-icon" class="fa-solid fa-moon text-sm"></i>
+        </button>
 
-<nav class="sidebar-nav">
-<a href="/docs" class="nav-item">
-<span class="nav-icon"><i class="fa-solid fa-book"></i></span>
-<span class="nav-text">
-<span class="nav-title">Docs</span>
-<span class="nav-caption">API Reference</span>
-</span>
-<span class="nav-chevron"><i class="fa-solid fa-chevron-right"></i></span>
-</a>
-<a href="/stats" class="nav-item">
-<span class="nav-icon"><i class="fa-solid fa-chart-simple"></i></span>
-<span class="nav-text">
-<span class="nav-title">Stats</span>
-<span class="nav-caption">Usage &amp; Metrics</span>
-</span>
-<span class="nav-chevron"><i class="fa-solid fa-chevron-right"></i></span>
-</a>
-</nav>
+        <button id="mobile-menu-btn" aria-label="Open Navigation" class="md:hidden w-9 h-9 rounded-lg border border-zinc-200 dark:border-zinc-800 flex items-center justify-center text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800/60 transition-colors">
+          <i class="fa-solid fa-bars text-sm"></i>
+        </button>
+      </div>
+    </div>
 
-<div class="sidebar-divider"></div>
-<p class="sidebar-footer">Powered by <span class="sidebar-footer-accent">Nimzz</span> &bull; 2026</p>
-</aside>
+    <!-- Mobile Drawer -->
+    <div id="mobile-menu" class="hidden md:hidden border-t border-zinc-200 dark:border-zinc-800 bg-white dark:bg-[#0c0f17] px-4 pt-3 pb-4 space-y-2">
+      <a href="#categories" class="mobile-nav-link block px-3 py-2 rounded-md text-base font-medium text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800">Categories</a>
+      <a href="#tester" class="mobile-nav-link block px-3 py-2 rounded-md text-base font-medium text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800">API Tester</a>
+      <a href="/docs" class="block px-3 py-2 rounded-md text-base font-medium text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 flex items-center justify-between">
+        <span>Documentation</span>
+        <i class="fa-solid fa-arrow-up-right-from-square text-xs opacity-60"></i>
+      </a>
+      <a href="/stats" class="block px-3 py-2 rounded-md text-base font-medium text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 flex items-center justify-between">
+        <span>System Stats</span>
+        <i class="fa-solid fa-chart-simple text-xs opacity-60"></i>
+      </a>
+      <a href="https://github.com/NimzzAI/nekoapi" target="_blank" rel="noopener noreferrer" class="block px-3 py-2 rounded-md text-base font-medium text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 flex items-center justify-between">
+        <span>GitHub Repository</span>
+        <i class="fa-brands fa-github"></i>
+      </a>
+    </div>
+  </header>
 
-<main id="main-content" class="main-content">
+  <!-- Main Content -->
+  <main class="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12 space-y-16 md:space-y-24">
 
-<div id="loader" class="loader">
-<div class="clay-shimmer loader-thumb"></div>
-<div class="clay-shimmer loader-line-lg"></div>
-<div class="clay-shimmer loader-line-sm"></div>
-<div class="clay-shimmer loader-line-xs"></div>
-</div>
+    <!-- Hero Section -->
+    <section class="relative pt-4 sm:pt-8 md:pt-12 text-center max-w-4xl mx-auto space-y-6">
+      <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium bg-zinc-100 dark:bg-zinc-800/80 border border-zinc-200 dark:border-zinc-700/60 text-zinc-700 dark:text-zinc-300">
+        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+        <span>Developer-First REST API</span>
+        <span class="text-zinc-400 dark:text-zinc-600">•</span>
+        <span class="text-indigo-600 dark:text-indigo-400 font-mono">Zero Query Params for Hubs</span>
+      </div>
 
-<div id="content" class="content hidden">
-<div class="reveal thumb-wrap">
-<video id="dash-thumb" class="thumb-img" autoplay loop muted playsinline poster="%%OG_IMAGE%%"></video>
-</div>
-<div class="reveal hero-text text-center">
-<h1 id="dash-title" class="hero-title"></h1>
-<div class="hero-underline"></div>
-<p id="dash-desc" class="hero-desc"></p>
-</div>
-<div class="reveal footer-credit">
-<p>Powered by <span class="footer-accent">Nimzz</span> &bull; 2026</p>
-</div>
-</div>
+      <h1 class="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight text-zinc-900 dark:text-white leading-[1.15]">
+        High-Performance APIs <br class="hidden sm:inline">
+        <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500">for Modern Applications</span>
+      </h1>
 
-</main>
+      <p id="hero-desc" class="text-base sm:text-lg text-zinc-600 dark:text-zinc-400 max-w-2xl mx-auto leading-relaxed">
+        %%API_DESC%%
+      </p>
 
-</div>
+      <!-- Quick Metrics Row -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-2xl mx-auto pt-2">
+        <div class="p-3.5 rounded-xl border border-zinc-200/90 dark:border-zinc-800/90 bg-white dark:bg-zinc-900/50 shadow-sm text-left">
+          <div class="text-xs text-zinc-500 dark:text-zinc-400 font-medium">Categories</div>
+          <div id="stat-categories" class="text-xl font-bold font-mono text-zinc-900 dark:text-white mt-1">7 Hubs</div>
+        </div>
+        <div class="p-3.5 rounded-xl border border-zinc-200/90 dark:border-zinc-800/90 bg-white dark:bg-zinc-900/50 shadow-sm text-left">
+          <div class="text-xs text-zinc-500 dark:text-zinc-400 font-medium">Total Endpoints</div>
+          <div id="stat-endpoints" class="text-xl font-bold font-mono text-zinc-900 dark:text-white mt-1">11+</div>
+        </div>
+        <div class="p-3.5 rounded-xl border border-zinc-200/90 dark:border-zinc-800/90 bg-white dark:bg-zinc-900/50 shadow-sm text-left">
+          <div class="text-xs text-zinc-500 dark:text-zinc-400 font-medium">Method</div>
+          <div class="text-xl font-bold font-mono text-emerald-600 dark:text-emerald-400 mt-1">100% GET</div>
+        </div>
+        <div class="p-3.5 rounded-xl border border-zinc-200/90 dark:border-zinc-800/90 bg-white dark:bg-zinc-900/50 shadow-sm text-left">
+          <div class="text-xs text-zinc-500 dark:text-zinc-400 font-medium">Avg Latency</div>
+          <div id="stat-latency" class="text-xl font-bold font-mono text-indigo-600 dark:text-indigo-400 mt-1">&lt; 50ms</div>
+        </div>
+      </div>
 
-<script src="/landing/landing.js"></script>
+      <!-- Hero CTAs -->
+      <div class="flex flex-wrap items-center justify-center gap-3 pt-2">
+        <a href="#categories" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 font-semibold text-sm shadow hover:bg-zinc-800 dark:hover:bg-zinc-100 transition-colors focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+          <span>Explore Categories</span>
+          <i class="fa-solid fa-arrow-down text-xs"></i>
+        </a>
+        <button onclick="runQuickEndpoint('/api/waifu')" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800/80 text-zinc-800 dark:text-zinc-200 font-semibold text-sm hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors shadow-sm focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+          <i class="fa-solid fa-wand-magic-sparkles text-pink-500"></i>
+          <span>Try Random Waifu</span>
+        </button>
+        <a href="/docs" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg border border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white font-medium text-sm transition-colors">
+          <span>Documentation</span>
+          <i class="fa-solid fa-book text-xs"></i>
+        </a>
+      </div>
+    </section>
+
+    <!-- Categories Section -->
+    <section id="categories" class="scroll-mt-20 space-y-6">
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-zinc-200 dark:border-zinc-800/80 pb-5">
+        <div>
+          <div class="text-xs font-mono font-semibold tracking-wider uppercase text-indigo-600 dark:text-indigo-400">Standalone Endpoints</div>
+          <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-900 dark:text-white mt-1">API Categories</h2>
+          <p class="text-sm text-zinc-500 dark:text-zinc-400 mt-1">Setiap kategori memiliki endpoint langsung yang siap dieksekusi tanpa query parameter.</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="text-xs text-zinc-500 dark:text-zinc-400">Total:</span>
+          <span id="category-count-badge" class="px-2 py-0.5 text-xs font-mono font-semibold rounded bg-zinc-200 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200">7 Standalone</span>
+        </div>
+      </div>
+
+      <!-- Category Cards Grid -->
+      <div id="category-cards" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        <!-- Dynamic Cards rendered via JS -->
+      </div>
+    </section>
+
+    <!-- API Tester Section -->
+    <section id="tester" class="scroll-mt-20 space-y-6">
+      <div class="border-b border-zinc-200 dark:border-zinc-800/80 pb-5">
+        <div class="text-xs font-mono font-semibold tracking-wider uppercase text-indigo-600 dark:text-indigo-400">Interactive Console</div>
+        <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-900 dark:text-white mt-1">Live API Tester</h2>
+        <p class="text-sm text-zinc-500 dark:text-zinc-400 mt-1">Uji coba langsung respons API secara instan dari peramban Anda.</p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        
+        <!-- Left: Endpoint Request Controls (5 cols) -->
+        <div class="lg:col-span-5 space-y-5 bg-white dark:bg-[#11141c] border border-zinc-200 dark:border-zinc-800 rounded-2xl p-5 shadow-sm">
+          <div>
+            <label for="endpoint-selector" class="block text-xs font-semibold text-zinc-700 dark:text-zinc-300 uppercase tracking-wider mb-2">Pilih Endpoint</label>
+            <select id="endpoint-selector" class="w-full bg-zinc-50 dark:bg-zinc-900/90 border border-zinc-300 dark:border-zinc-700/80 rounded-xl px-3.5 py-2.5 text-sm font-mono text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+              <!-- Dynamically populated -->
+            </select>
+          </div>
+
+          <!-- Endpoint Overview Card -->
+          <div class="p-3.5 rounded-xl bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200/80 dark:border-zinc-800 space-y-2">
+            <div class="flex items-center justify-between">
+              <span id="active-method" class="px-2 py-0.5 rounded text-[11px] font-mono font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">GET</span>
+              <span id="active-category-pill" class="text-xs font-mono text-zinc-500 dark:text-zinc-400">category</span>
+            </div>
+            <div id="active-endpoint-path" class="text-sm font-mono font-semibold text-zinc-900 dark:text-white break-all">/api/waifu</div>
+            <p id="active-endpoint-desc" class="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed"></p>
+          </div>
+
+          <!-- Query Parameters Form (if applicable) -->
+          <div id="params-section" class="space-y-3 hidden">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-semibold text-zinc-700 dark:text-zinc-300 uppercase tracking-wider">Query Parameters</span>
+              <span class="text-[11px] text-zinc-400">Opsional / Kustom</span>
+            </div>
+            <div id="params-container" class="space-y-2.5">
+              <!-- Dynamic inputs -->
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="pt-2 flex flex-col sm:flex-row items-stretch gap-2.5">
+            <button id="btn-execute" onclick="executeCurrentEndpoint()" class="flex-1 inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-sm transition-colors shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+              <i id="execute-icon" class="fa-solid fa-play text-xs"></i>
+              <span id="execute-text">Execute Endpoint</span>
+            </button>
+            <button onclick="copyCurrentUrl()" class="px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700/80 bg-zinc-50 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-700/80 text-sm font-medium transition-colors flex items-center justify-center gap-2">
+              <i class="fa-regular fa-copy text-xs"></i>
+              <span>Copy URL</span>
+            </button>
+          </div>
+
+          <!-- Quick Code Snippet -->
+          <div class="pt-3 border-t border-zinc-200 dark:border-zinc-800">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-[11px] font-mono text-zinc-500 uppercase tracking-wider">Quick cURL</span>
+              <button onclick="copyCurlSnippet()" class="text-[11px] text-indigo-600 dark:text-indigo-400 hover:underline">Copy cURL</button>
+            </div>
+            <div id="curl-preview" class="p-2.5 rounded-lg bg-zinc-900 text-zinc-300 font-mono text-xs overflow-x-auto whitespace-pre">curl -X GET "https://api.../api/waifu"</div>
+          </div>
+        </div>
+
+        <!-- Right: Response Console (7 cols) -->
+        <div class="lg:col-span-7 space-y-4">
+          
+          <!-- Response Header Bar -->
+          <div class="flex items-center justify-between bg-white dark:bg-[#11141c] border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 py-3 shadow-sm">
+            <div class="flex items-center gap-3">
+              <span class="text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Response</span>
+              <span id="res-status-badge" class="px-2 py-0.5 rounded text-xs font-mono font-bold bg-zinc-100 dark:bg-zinc-800 text-zinc-500">Ready</span>
+              <span id="res-latency-badge" class="text-xs font-mono text-zinc-400 hidden">0ms</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <button id="btn-copy-response" onclick="copyResponseJson()" disabled class="px-3 py-1.5 rounded-lg text-xs font-medium text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1.5">
+                <i class="fa-regular fa-copy"></i>
+                <span>Copy JSON</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Visual Media Preview Container (If image/waifu returned) -->
+          <div id="media-preview-card" class="hidden p-4 rounded-2xl bg-white dark:bg-[#11141c] border border-zinc-200 dark:border-zinc-800 shadow-sm flex flex-col sm:flex-row items-center gap-4">
+            <img id="media-preview-img" src="" alt="API Preview" class="w-32 h-32 rounded-xl object-cover ring-1 ring-zinc-200 dark:ring-zinc-800 shadow-sm bg-zinc-100 dark:bg-zinc-800">
+            <div class="flex-1 min-w-0 space-y-1.5 text-left">
+              <div class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[11px] font-mono bg-pink-500/10 text-pink-500 border border-pink-500/20">
+                <i class="fa-regular fa-image"></i>
+                <span>Rendered Asset</span>
+              </div>
+              <h4 id="media-preview-title" class="font-bold text-sm text-zinc-900 dark:text-white truncate">Anime Artwork</h4>
+              <p id="media-preview-artist" class="text-xs text-zinc-500 dark:text-zinc-400 truncate"></p>
+              <a id="media-preview-link" href="#" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-xs text-indigo-600 dark:text-indigo-400 hover:underline pt-1">
+                <span>Buka Gambar Asli</span>
+                <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+              </a>
+            </div>
+          </div>
+
+          <!-- Response JSON Code Block -->
+          <div class="relative rounded-2xl bg-[#0d1017] border border-zinc-800 shadow-inner overflow-hidden font-mono text-xs">
+            <div class="flex items-center justify-between px-4 py-2.5 bg-zinc-900/80 border-b border-zinc-800/80 text-zinc-400">
+              <div class="flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-rose-500/80"></span>
+                <span class="w-2.5 h-2.5 rounded-full bg-amber-500/80"></span>
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500/80"></span>
+                <span class="ml-2 text-[11px] text-zinc-500">payload.json</span>
+              </div>
+              <span id="response-content-type" class="text-[11px] text-zinc-500">application/json</span>
+            </div>
+
+            <!-- Loader Overlay -->
+            <div id="response-loader" class="hidden absolute inset-0 bg-[#0d1017]/90 backdrop-blur-sm z-20 flex flex-col items-center justify-center gap-3">
+              <div class="w-8 h-8 rounded-full border-2 border-indigo-500/30 border-t-indigo-500 animate-spin"></div>
+              <span class="text-xs font-mono text-zinc-400">Executing request...</span>
+            </div>
+
+            <!-- Preformatted JSON Viewer -->
+            <pre id="json-viewer" class="p-4 sm:p-5 text-zinc-300 overflow-x-auto max-h-[500px] leading-relaxed select-all font-mono whitespace-pre">{
+  "status": true,
+  "message": "Pilih endpoint di panel kiri dan klik 'Execute Endpoint' untuk melihat response real-time."
+}</pre>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Integration Code Examples -->
+    <section class="space-y-6">
+      <div class="border-b border-zinc-200 dark:border-zinc-800/80 pb-5">
+        <div class="text-xs font-mono font-semibold tracking-wider uppercase text-indigo-600 dark:text-indigo-400">Developer Integration</div>
+        <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-900 dark:text-white mt-1">Multi-Language Code Snippets</h2>
+        <p class="text-sm text-zinc-500 dark:text-zinc-400 mt-1">Salin kode yang siap digunakan dalam proyek Anda.</p>
+      </div>
+
+      <div class="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-[#11141c] overflow-hidden shadow-sm">
+        <div class="flex items-center justify-between border-b border-zinc-200 dark:border-zinc-800 px-4 py-2 bg-zinc-50 dark:bg-zinc-900/60">
+          <div class="flex items-center gap-2" id="snippet-tabs">
+            <button onclick="setSnippetTab('js')" id="tab-js" class="px-3 py-1.5 text-xs font-mono font-medium rounded-lg bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20">JavaScript</button>
+            <button onclick="setSnippetTab('curl')" id="tab-curl" class="px-3 py-1.5 text-xs font-mono font-medium rounded-lg text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white">cURL</button>
+            <button onclick="setSnippetTab('python')" id="tab-python" class="px-3 py-1.5 text-xs font-mono font-medium rounded-lg text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white">Python</button>
+            <button onclick="setSnippetTab('php')" id="tab-php" class="px-3 py-1.5 text-xs font-mono font-medium rounded-lg text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white">PHP</button>
+          </div>
+          <button onclick="copyActiveSnippet()" class="text-xs text-zinc-500 hover:text-zinc-900 dark:hover:text-white flex items-center gap-1.5">
+            <i class="fa-regular fa-copy"></i>
+            <span>Copy Snippet</span>
+          </button>
+        </div>
+        <pre id="code-snippet-box" class="p-4 sm:p-5 bg-[#0d1017] text-zinc-300 font-mono text-xs overflow-x-auto whitespace-pre leading-relaxed"></pre>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="mt-auto border-t border-zinc-200 dark:border-zinc-800 bg-white dark:bg-[#090b10] py-10 transition-colors">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-6 text-sm text-zinc-500 dark:text-zinc-400">
+      <div class="flex items-center gap-3">
+        <img id="footer-logo" src="%%FAVICON%%" alt="Logo" class="w-6 h-6 rounded object-cover">
+        <span class="font-mono font-semibold text-zinc-900 dark:text-white">%%API_NAME%%</span>
+        <span>•</span>
+        <span>Crafted by <span id="footer-creator" class="font-semibold text-zinc-900 dark:text-white">Nimzz</span></span>
+      </div>
+
+      <div class="flex flex-wrap items-center justify-center gap-6 text-xs">
+        <a href="/docs" class="hover:text-zinc-900 dark:hover:text-white transition-colors">Documentation</a>
+        <a href="/stats" class="hover:text-zinc-900 dark:hover:text-white transition-colors">System Metrics</a>
+        <a href="https://github.com/NimzzAI/nekoapi" target="_blank" rel="noopener noreferrer" class="hover:text-zinc-900 dark:hover:text-white transition-colors">GitHub</a>
+        <a href="/config" target="_blank" class="hover:text-zinc-900 dark:hover:text-white transition-colors">Config JSON</a>
+      </div>
+
+      <div class="flex items-center gap-2 text-xs font-mono">
+        <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+        <span>All systems operational</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Toast Notification Container -->
+  <div id="toast" class="fixed bottom-5 right-5 z-50 transform translate-y-10 opacity-0 pointer-events-none transition-all duration-300 flex items-center gap-2.5 px-4 py-3 rounded-xl bg-zinc-900 text-white dark:bg-white dark:text-zinc-900 shadow-xl border border-zinc-700/50 dark:border-zinc-200 text-sm font-medium">
+    <i id="toast-icon" class="fa-solid fa-circle-check text-emerald-500 dark:text-emerald-600"></i>
+    <span id="toast-message">Copied to clipboard</span>
+  </div>
+
+  <script src="/landing/landing.js"></script>
 </body>
 </html>

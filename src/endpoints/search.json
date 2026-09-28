@@ -1,14 +1,23 @@
 [
   {
+    "name": "Search Hub",
+    "endpoint": "/api/search",
+    "filename": "hub",
+    "method": "GET",
+    "description": "Portal layanan pencarian multimedia YouTube dan Pinterest.",
+    "params": []
+  },
+  {
     "name": "Youtube Search",
     "endpoint": "/api/search/yts",
     "filename": "yts",
     "method": "GET",
+    "description": "Cari video di YouTube dengan durasi, thumbnail, dan link video.",
     "params": [
       {
         "name": "q",
         "required": true,
-        "description": "Query"
+        "description": "Kata kunci pencarian (contoh: lofi music)"
       }
     ]
   },
@@ -17,11 +26,12 @@
     "endpoint": "/api/search/pinterest",
     "filename": "pinterest",
     "method": "GET",
+    "description": "Cari gambar dan pin inspiratif dari Pinterest.",
     "params": [
       {
         "name": "q",
         "required": true,
-        "description": "Query"
+        "description": "Kata kunci pencarian (contoh: wallpaper aesthetic)"
       }
     ]
   }
