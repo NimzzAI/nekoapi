@@ -14,6 +14,7 @@ import fs from 'fs';
 import os from 'os';
 import { rateLimit } from './src/middleware/rateLimit';
 import { errorHandler } from './src/middleware/errorHandler';
+import { requestLogger } from './src/middleware/requestLogger';
 import {
     loadRouter,
     initAutoLoad,
@@ -103,6 +104,7 @@ const logRequest = (req: Request, res: Response) => {
     if (recentRequests.length > 50) recentRequests.shift();
 };
 
+app.use(requestLogger);
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -114,6 +116,55 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 
 app.use(express.static(path.join(process.cwd(), 'public')));
 app.use('/src', express.static(path.join(process.cwd(), 'src')));
+
+app.get('/api/status', (req: Request, res: Response) => {
+    try {
+        const mem = process.memoryUsage();
+        const uptimeSeconds = process.uptime();
+        const environment = process.env.NODE_ENV || 'development';
+
+        return res.status(200).json({
+            status: 'ok',
+            statusCode: 200,
+            uptime: uptimeSeconds,
+            environment,
+            memory: {
+                rss: mem.rss,
+                heapTotal: mem.heapTotal,
+                heapUsed: mem.heapUsed,
+                external: mem.external,
+                arrayBuffers: mem.arrayBuffers,
+                formatted: {
+                    rss: formatBytes(mem.rss),
+                    heapTotal: formatBytes(mem.heapTotal),
+                    heapUsed: formatBytes(mem.heapUsed),
+                    external: formatBytes(mem.external)
+                }
+            },
+            memoryUsage: {
+                rss: mem.rss,
+                heapTotal: mem.heapTotal,
+                heapUsed: mem.heapUsed,
+                external: mem.external,
+                arrayBuffers: mem.arrayBuffers
+            },
+            server: {
+                uptime: formatUptime(uptimeSeconds),
+                uptimeSeconds,
+                environment,
+                timestamp: new Date().toISOString()
+            }
+        });
+    } catch {
+        return res.status(200).json({
+            status: 'ok',
+            statusCode: 200,
+            uptime: process.uptime(),
+            environment: process.env.NODE_ENV || 'development',
+            memory: process.memoryUsage()
+        });
+    }
+});
 
 app.use(rateLimit); // rate limiter
 loadRouter(app, config); // endpoints router
