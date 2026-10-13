@@ -54,9 +54,9 @@ const getRouteFile = (category: string, filename: string) => {
         path.join(process.cwd(), 'dist', 'router', category)
     ];
 
-    // Urutan pencarian: TypeScript/JS (CommonJS) dulu, lalu ESM (.mjs), lalu Go, lalu PHP.
+    // Urutan pencarian: TypeScript/JS (CommonJS) dulu, lalu ESM (.mjs), lalu Rust, Go, PHP.
     for (const folder of folders) {
-        for (const extension of ['.ts', '.js', '.mjs', '.go', '.php']) {
+        for (const extension of ['.ts', '.js', '.mjs', '.rs', '.go', '.php']) {
             const filePath = path.join(folder, `${filename}${extension}`);
             if (fs.existsSync(filePath)) return filePath;
         }
@@ -79,13 +79,15 @@ const getRouteKey = (route: any) =>
 
 const runtimeAvailability = new Map<string, boolean>();
 const goBinaryCache = new Map<string, string>();
+const rustBinaryCache = new Map<string, string>();
 
 const isRuntimeAvailable = (cmd: string): boolean => {
     if (runtimeAvailability.has(cmd)) return runtimeAvailability.get(cmd)!;
 
     let available = false;
     try {
-        execSync(`${cmd} version`, { stdio: 'ignore', timeout: 5000 });
+        const checkFlag = cmd === 'rustc' ? '--version' : 'version';
+        execSync(`${cmd} ${checkFlag}`, { stdio: 'ignore', timeout: 5000 });
         available = true;
     } catch {
         available = false;
@@ -136,15 +138,39 @@ const compileGoBinary = async (filePath: string): Promise<string> => {
     return binPath;
 };
 
-/** Handler untuk endpoint .go / .php — dijalankan sebagai subprocess terpisah. */
-const createSubprocessHandler = (filePath: string, ext: '.go' | '.php') => {
+const compileRustBinary = async (filePath: string): Promise<string> => {
+    const cached = rustBinaryCache.get(filePath);
+    if (cached && fs.existsSync(cached)) return cached;
+
+    const binPath = filePath.replace(/\.rs$/, process.platform === 'win32' ? '.exe' : '.bin');
+    if (fs.existsSync(binPath)) {
+        rustBinaryCache.set(filePath, binPath);
+        return binPath;
+    }
+
+    await new Promise<void>((resolve, reject) => {
+        const build = spawn('rustc', ['-O', '-o', binPath, filePath]);
+        let stderr = '';
+        build.stderr.on('data', (chunk) => { stderr += chunk; });
+        build.on('error', reject);
+        build.on('close', (code) => {
+            code === 0 ? resolve() : reject(new Error(stderr.trim() || 'rustc build failed'));
+        });
+    });
+
+    rustBinaryCache.set(filePath, binPath);
+    return binPath;
+};
+
+/** Handler untuk endpoint .go / .php / .rs — dijalankan sebagai subprocess terpisah. */
+const createSubprocessHandler = (filePath: string, ext: '.go' | '.php' | '.rs') => {
     return async (req: Request, res: Response) => {
-        const runtimeCmd = ext === '.go' ? 'go' : 'php';
+        const runtimeCmd = ext === '.go' ? 'go' : ext === '.rs' ? 'rustc' : 'php';
 
         if (!isRuntimeAvailable(runtimeCmd)) {
             return res.status(501).json({
                 status: false,
-                message: `Runtime '${runtimeCmd}' tidak tersedia di server ini. Endpoint ${ext} butuh server dengan ${runtimeCmd} terinstal (tidak berjalan di Vercel serverless).`
+                message: `Runtime '${runtimeCmd}' tidak tersedia di server ini. Endpoint ${ext} butuh server dengan ${runtimeCmd} terinstal. Untuk Rust performa tinggi tanpa dependensi compiler, gunakan endpoint bawaan /api/tools/rust-system.`
             });
         }
 
@@ -155,6 +181,9 @@ const createSubprocessHandler = (filePath: string, ext: '.go' | '.php') => {
 
             if (ext === '.go') {
                 const binPath = await compileGoBinary(filePath);
+                output = await runSubprocess(binPath, [], input);
+            } else if (ext === '.rs') {
+                const binPath = await compileRustBinary(filePath);
                 output = await runSubprocess(binPath, [], input);
             } else {
                 output = await runSubprocess('php', [filePath], input);
@@ -234,7 +263,7 @@ const registerRoute = (
     try {
         let handler: Function;
 
-        if (ext === '.go' || ext === '.php') {
+        if (ext === '.go' || ext === '.php' || ext === '.rs') {
             handler = createSubprocessHandler(filePath, ext);
         } else if (ext === '.mjs') {
             handler = createEsmHandler(filePath);

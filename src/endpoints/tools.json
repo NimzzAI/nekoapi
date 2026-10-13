@@ -25,6 +25,34 @@
     "params": []
   },
   {
+    "name": "Rust System & Compute Engine",
+    "endpoint": "/api/tools/rust-system",
+    "filename": "rust-system",
+    "method": "GET",
+    "params": [
+      {
+        "name": "mode",
+        "required": false,
+        "description": "Mode kalkulasi: system, hash, primes, fibonacci (default: system)"
+      },
+      {
+        "name": "text",
+        "required": false,
+        "description": "Teks untuk FNV-1a, Murmur3, dan CRC32 hashing"
+      },
+      {
+        "name": "n",
+        "required": false,
+        "description": "Angka untuk primes count atau Fibonacci (default: 45)"
+      },
+      {
+        "name": "iterations",
+        "required": false,
+        "description": "Jumlah iterasi benchmark (default: 50000)"
+      }
+    ]
+  },
+  {
     "name": "Base64 Converter",
     "endpoint": "/api/tools/base64",
     "filename": "base64",

@@ -74,27 +74,45 @@ fetch('/config')
 
         const thumbEl=document.getElementById('dash-thumb');
         const thumbSrc=config.settings.thumbnail||'/thumbnail.mp4';
-        thumbEl.innerHTML=`<source src="${thumbSrc}" type="video/mp4">`;
-        thumbEl.load();
-        thumbEl.play().catch(()=>{});
-        thumbEl.onerror=()=>{
-            thumbEl.replaceWith(Object.assign(document.createElement('img'),{
-                id:'dash-thumb',
-                className:'thumb-img',
-                alt:'Cover',
-                src:'/og-image.png'
-            }));
-        };
+        if(thumbEl){
+            if(thumbSrc.endsWith('.mp4')){
+                thumbEl.innerHTML=`<source src="${thumbSrc}" type="video/mp4">`;
+                thumbEl.load();
+                thumbEl.play().catch(()=>{});
+                thumbEl.onerror=()=>{
+                    const img=Object.assign(document.createElement('img'),{
+                        id:'dash-thumb',
+                        className:'thumb-img',
+                        alt:name||'Cover',
+                        src:config.settings.ogImage||'/og-image.png'
+                    });
+                    thumbEl.replaceWith(img);
+                };
+            }else{
+                const img=Object.assign(document.createElement('img'),{
+                    id:'dash-thumb',
+                    className:'thumb-img',
+                    alt:name||'Cover',
+                    src:thumbSrc
+                });
+                thumbEl.replaceWith(img);
+            }
+        }
 
         const headerLogo=document.getElementById('header-logo');
         const sidebarLogo=document.getElementById('sidebar-logo');
 
         if(config.settings.favicon){
-            document.getElementById('favicon').href=config.settings.favicon;
-            headerLogo.src=config.settings.favicon;
-            sidebarLogo.src=config.settings.favicon;
-            headerLogo.classList.remove('hidden');
-            sidebarLogo.classList.remove('hidden');
+            const favIcons=document.querySelectorAll("link[rel*='icon']");
+            favIcons.forEach(f=>f.href=config.settings.favicon);
+            if(headerLogo){
+                headerLogo.src=config.settings.favicon;
+                headerLogo.classList.remove('hidden');
+            }
+            if(sidebarLogo){
+                sidebarLogo.src=config.settings.favicon;
+                sidebarLogo.classList.remove('hidden');
+            }
         }
 
         const elapsed=Date.now()-startLoad;

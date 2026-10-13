@@ -1,6 +1,6 @@
 {
   "name": "NekoAPI",
-  "description": "REST API service built with Node.js and Express featuring endpoints for media downloading, image generation, search, and web tools.",
+  "description": "High-performance REST API service built with Node.js, Express, and Rust engine integration featuring multimedia tools, image generation, fast hashing, and interactive documentation.",
   "permissions": [],
   "capabilities": [
     "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"

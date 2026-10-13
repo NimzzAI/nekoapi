@@ -22,7 +22,7 @@ import {
 } from './src/autoload';
 
 const app = express();
-const port = Number(process.env.PORT) || 3000;
+const port = 3000;
 const recentRequests: string[] = [];
 app.set('trust proxy', true);
 const configPaths = [
