@@ -1,5 +1,43 @@
 [
   {
+    "name": "Data Sekolah Indonesia",
+    "endpoint": "/api/search/sekolah",
+    "filename": "sekolah",
+    "method": "GET",
+    "params": [
+      {
+        "name": "nama",
+        "required": false,
+        "description": "Mencari sekolah berdasarkan nama (min. 3 karakter, cth: madani, bina insani, SMA Negeri 1)"
+      },
+      {
+        "name": "bentuk_pendidikan",
+        "required": false,
+        "description": "Filter jenjang pendidikan (cth: SD, SMP, SMA, SMK, MA, MTS, TK, PKBM)"
+      },
+      {
+        "name": "npsn",
+        "required": false,
+        "description": "Nomor Pokok Sekolah Nasional (cth: 69901175)"
+      },
+      {
+        "name": "akreditasi",
+        "required": false,
+        "description": "Nilai akreditasi (cth: A, B, C)"
+      },
+      {
+        "name": "kode_wilayah",
+        "required": false,
+        "description": "Kode wilayah Kemendagri (cth: 3171 untuk Jakarta Pusat, 327105)"
+      },
+      {
+        "name": "limit",
+        "required": false,
+        "description": "Jumlah maksimal data yang ditampilkan (default: 10, max: 100)"
+      }
+    ]
+  },
+  {
     "name": "Youtube Search",
     "endpoint": "/api/search/yts",
     "filename": "yts",
@@ -8,7 +46,7 @@
       {
         "name": "q",
         "required": true,
-        "description": "Query"
+        "description": "Query pencarian YouTube"
       }
     ]
   },
@@ -21,7 +59,7 @@
       {
         "name": "q",
         "required": true,
-        "description": "Query"
+        "description": "Query pencarian gambar Pinterest"
       }
     ]
   }

@@ -2,12 +2,12 @@
   "settings": {
     "creator": "Nimzz",
     "apiName": "NekoAPI",
-    "description": "REST API gratis, cepat, dan andal untuk pengembangan aplikasi modern. Dilengkapi engine backend Rust, endpoint multimedia, konverter tools, dan dokumentasi interaktif.",
+    "description": "REST API gratis, cepat, dan andal untuk pengembangan aplikasi modern. Dilengkapi engine backend Rust, endpoint pencarian sekolah Indonesia, multimedia tools, dan dokumentasi interaktif.",
     "apiVersion": "v1.2",
     "visitors": "0",
-    "siteUrl": "https://ais-dev-qk4bvdxpsogfmtf4qbnbsd-28343948057.asia-southeast1.run.app",
+    "siteUrl": "https://ais-pre-qk4bvdxpsogfmtf4qbnbsd-28343948057.asia-southeast1.run.app",
     "favicon": "/favicon.png",
     "thumbnail": "/thumbnail.mp4",
-    "ogImage": "/og-image.png"
+    "ogImage": "/og-image.jpg"
   }
 }

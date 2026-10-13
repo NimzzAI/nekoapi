@@ -44,6 +44,24 @@ const findConfig = () => {
 const configPath = findConfig();
 const config = buildConfig(configPath, process.cwd());
 
+const getBaseUrl = (req: Request): string => {
+    const proto = (req.headers['x-forwarded-proto'] as string) || req.protocol || 'https';
+    const host = (req.headers['x-forwarded-host'] as string) || req.get('host') || '';
+
+    // Jika request datang dari domain publik/shared URL atau custom domain (bukan localhost)
+    if (host && !host.includes('127.0.0.1') && !host.includes('localhost')) {
+        return `${proto}://${host}`.replace(/\/+$/, '');
+    }
+
+    // Fallback ke siteUrl yang dikonfigurasi jika bukan localhost
+    const configured = (config.settings.siteUrl || '').trim().replace(/\/+$/, '');
+    if (configured && !configured.includes('127.0.0.1') && !configured.includes('localhost')) {
+        return configured;
+    }
+
+    return `${proto}://${host || 'localhost:3000'}`.replace(/\/+$/, '');
+};
+
 const renderPage = (filePath: string) => (req: Request, res: Response) => {
     fs.readFile(filePath, 'utf8', (err, html) => {
         if (err) {
@@ -51,11 +69,22 @@ const renderPage = (filePath: string) => (req: Request, res: Response) => {
         }
 
         const s = config.settings;
+        const siteUrl = getBaseUrl(req);
+        const rawOg = (s.ogImage || '/og-image.jpg').trim();
+        const ogPath = rawOg.startsWith('/') ? rawOg : `/${rawOg}`;
+        const fullOgUrl = rawOg.startsWith('http://') || rawOg.startsWith('https://')
+            ? rawOg
+            : `${siteUrl}${ogPath}`;
+        const ogType = fullOgUrl.endsWith('.png') ? 'image/png' : 'image/jpeg';
+
         const out = html
-            .replace(/%%SITE_URL%%/g, s.siteUrl || `${req.protocol}://${req.get('host')}`)
+            .replace(/%%SITE_URL%%(?:\/%%OG_IMAGE%%|%%OG_IMAGE%%)/g, fullOgUrl)
+            .replace(/%%OG_IMAGE_FULL%%/g, fullOgUrl)
+            .replace(/%%OG_IMAGE%%/g, fullOgUrl)
+            .replace(/%%OG_IMAGE_TYPE%%/g, ogType)
+            .replace(/%%SITE_URL%%/g, siteUrl)
             .replace(/%%API_NAME%%/g, s.apiName || 'NekoAPI')
             .replace(/%%API_DESC%%/g, s.description || '')
-            .replace(/%%OG_IMAGE%%/g, s.ogImage || '/og-image.png')
             .replace(/%%FAVICON%%/g, s.favicon || '/favicon.png');
 
         res.set('Content-Type', 'text/html').send(out);
