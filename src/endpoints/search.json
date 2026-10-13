@@ -1,5 +1,76 @@
 [
   {
+    "name": "Song Lyrics & Synced Karaoke",
+    "endpoint": "/api/search/lyrics",
+    "filename": "lyrics",
+    "method": "GET",
+    "params": [
+      {
+        "name": "q",
+        "required": true,
+        "description": "Judul lagu atau kata kunci pencarian (cth: Bohemian Rhapsody, Komang)"
+      },
+      {
+        "name": "artist",
+        "required": false,
+        "description": "Nama artis / penyanyi untuk pencocokan akurat (cth: Queen, Raim Laode)"
+      },
+      {
+        "name": "type",
+        "required": false,
+        "description": "Pilihan tipe: get (lirik lengkap + synced karaoke lines), search (daftar hasil), id (by ID)"
+      },
+      {
+        "name": "id",
+        "required": false,
+        "description": "ID rekaman LRCLIB (cth: 16232)"
+      }
+    ]
+  },
+  {
+    "name": "VTuberSpace News & Directory",
+    "endpoint": "/api/search/vtuber",
+    "filename": "vtuber",
+    "method": "GET",
+    "params": [
+      {
+        "name": "action",
+        "required": false,
+        "description": "Pilihan aksi: news, home, news-detail, vtubers, search, profile, debuts, agencies (default: news)"
+      },
+      {
+        "name": "q",
+        "required": false,
+        "description": "Query pencarian nama VTuber atau kata kunci berita"
+      },
+      {
+        "name": "id",
+        "required": false,
+        "description": "ID atau slug berita / VTuber"
+      },
+      {
+        "name": "category",
+        "required": false,
+        "description": "Kategori berita (cth: debut, event, drama, general)"
+      },
+      {
+        "name": "sort",
+        "required": false,
+        "description": "Urutan berita: latest, popular, oldest"
+      },
+      {
+        "name": "gender",
+        "required": false,
+        "description": "Filter gender direktori VTuber: Male, Female"
+      },
+      {
+        "name": "limit",
+        "required": false,
+        "description": "Jumlah maksimal data per halaman (default: 10)"
+      }
+    ]
+  },
+  {
     "name": "Data Sekolah Indonesia",
     "endpoint": "/api/search/sekolah",
     "filename": "sekolah",
