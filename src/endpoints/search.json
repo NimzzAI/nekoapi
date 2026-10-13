@@ -18,7 +18,8 @@
       {
         "name": "type",
         "required": false,
-        "description": "Pilihan tipe: get (lirik lengkap + synced karaoke lines), search (daftar hasil), id (by ID)"
+        "description": "Pilihan mode ekstraksi",
+        "options": ["get", "search", "id"]
       },
       {
         "name": "id",
@@ -36,7 +37,8 @@
       {
         "name": "action",
         "required": false,
-        "description": "Pilihan aksi: news, home, news-detail, vtubers, search, profile, debuts, agencies (default: news)"
+        "description": "Pilihan aksi data VTuberSpace",
+        "options": ["news", "home", "news-detail", "vtubers", "search", "profile", "debuts", "agencies"]
       },
       {
         "name": "q",
@@ -56,12 +58,14 @@
       {
         "name": "sort",
         "required": false,
-        "description": "Urutan berita: latest, popular, oldest"
+        "description": "Urutan daftar berita",
+        "options": ["latest", "popular", "oldest"]
       },
       {
         "name": "gender",
         "required": false,
-        "description": "Filter gender direktori VTuber: Male, Female"
+        "description": "Filter gender direktori VTuber",
+        "options": ["Female", "Male"]
       },
       {
         "name": "limit",
@@ -84,7 +88,8 @@
       {
         "name": "bentuk_pendidikan",
         "required": false,
-        "description": "Filter jenjang pendidikan (cth: SD, SMP, SMA, SMK, MA, MTS, TK, PKBM)"
+        "description": "Filter jenjang pendidikan",
+        "options": ["SD", "SMP", "SMA", "SMK", "MA", "MTS", "TK", "PKBM"]
       },
       {
         "name": "npsn",
@@ -94,7 +99,8 @@
       {
         "name": "akreditasi",
         "required": false,
-        "description": "Nilai akreditasi (cth: A, B, C)"
+        "description": "Nilai akreditasi",
+        "options": ["A", "B", "C"]
       },
       {
         "name": "kode_wilayah",

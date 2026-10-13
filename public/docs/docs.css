@@ -136,3 +136,18 @@ body{background:var(--paper);color:var(--ink)}
 .status-code.c4xx{background:var(--accent-2-soft);color:var(--accent-2)}
 .status-code.c429{background:var(--warn-soft);color:var(--warn)}
 .status-code.c5xx{background:var(--accent-soft);color:var(--accent)}
+
+/* Custom Option Chips / Button List (Non-bawaan) */
+.param-badge-type{font-size:9.5px;font-weight:700;letter-spacing:.05em;font-family:'IBM Plex Mono',monospace;color:var(--accent);background:var(--accent-soft);padding:2px 7px;border-radius:2px;display:inline-flex;align-items:center;gap:4px}
+.param-options-container{padding:9px 12px;background:rgba(43,58,103,.03);border:1px dashed var(--line-strong);border-radius:var(--radius);margin-top:7px}
+.param-options-label{display:flex;align-items:center;gap:6px;font-size:10.5px;font-weight:600;color:var(--ink-soft);margin-bottom:7px;user-select:none}
+.param-options-wrap{display:flex;flex-wrap:wrap;gap:6px}
+.param-option-chip{display:inline-flex;align-items:center;gap:6px;padding:5px 11px;font-size:11px;font-weight:600;font-family:'IBM Plex Mono',monospace;background:var(--paper-raised);border:1px solid var(--line-strong);border-radius:4px;color:var(--ink);cursor:pointer;transition:background .15s ease,color .15s ease,border-color .15s ease,transform .12s ease;user-select:none;-webkit-tap-highlight-color:transparent}
+.param-option-chip:hover{background:var(--accent-soft);color:var(--accent);border-color:var(--accent);transform:translateY(-1px)}
+.param-option-chip:active{transform:translateY(0)}
+.param-option-chip.active{background:var(--accent);color:#FFFFFF;border-color:var(--accent);box-shadow:0 2px 6px rgba(43,58,103,.25)}
+.param-option-chip .chip-dot{width:5px;height:5px;border-radius:50%;background:var(--ink-faint);transition:background .15s ease;flex-shrink:0}
+.param-option-chip:hover .chip-dot{background:var(--accent)}
+.param-option-chip.active .chip-dot{background:#5FAE84;box-shadow:0 0 5px #5FAE84}
+.param-option-chip .chip-text{line-height:1}
+

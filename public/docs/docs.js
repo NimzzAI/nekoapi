@@ -858,6 +858,68 @@ window.backToIntro = () => {
         .classList.add("active");
 };
 
+function extractParamOptions(param) {
+    if (Array.isArray(param.options) && param.options.length) {
+        return param.options;
+    }
+    const desc = param.description || "";
+    const match = desc.match(/(?:pilihan(?: algoritma| aksi| tipe| mode)?|mode(?: kalkulasi)?|filter jenjang(?: pendidikan)?|urutan(?: daftar)? berita|filter gender|nilai akreditasi)[:\s]+([^()]+)/i);
+    if (match) {
+        const raw = match[1].replace(/\(default[^)]*\)/gi, '').replace(/cth:?\s*/gi, '');
+        const items = raw.split(/[,/]| atau | or /i)
+            .map(s => s.trim().replace(/^['"`]|['"`]$/g, ''))
+            .filter(s => s && s.length < 25 && !s.includes(' ') && !s.startsWith('('));
+        if (items.length > 1) {
+            return items;
+        }
+    }
+    return null;
+}
+
+window.selectParamOption = function(chip, inputId, value) {
+    const input = document.getElementById(inputId);
+    if (!input) return;
+
+    const parent = chip.closest('.param-options-wrap');
+    const isAlreadyActive = chip.classList.contains('active');
+
+    if (isAlreadyActive) {
+        chip.classList.remove('active');
+        input.value = '';
+    } else {
+        if (parent) {
+            parent.querySelectorAll('.param-option-chip').forEach(c => c.classList.remove('active'));
+        }
+        chip.classList.add('active');
+        input.value = value;
+    }
+
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+    input.dispatchEvent(new Event('change', { bubbles: true }));
+};
+
+function bindParamOptionsSync(root) {
+    (root || document).querySelectorAll('.clay-input').forEach(input => {
+        if (input.dataset.boundOptions) return;
+        input.dataset.boundOptions = "1";
+        const idParts = input.id.replace('input-', '');
+        const container = document.getElementById('options-' + idParts);
+        if (!container) return;
+
+        input.addEventListener('input', () => {
+            const currentVal = input.value.trim().toLowerCase();
+            container.querySelectorAll('.param-option-chip').forEach(chip => {
+                const chipVal = (chip.dataset.value || '').trim().toLowerCase();
+                if (currentVal && chipVal === currentVal) {
+                    chip.classList.add('active');
+                } else {
+                    chip.classList.remove('active');
+                }
+            });
+        });
+    });
+}
+
 function renderEndpointCard(route, id) {
     const ev = document.getElementById("endpoint-view");
 
@@ -868,19 +930,29 @@ function renderEndpointCard(route, id) {
             <div class="grid gap-3 px-5 pb-5">
                 ${route.params
                     .map(
-                        param => `
-                            <div>
-                                <label
-                                    class="text-[11px] font-bold mb-1.5 block"
-                                    style="color:#55585F"
-                                >
-                                    ${param.name}
-                                    ${
-                                        param.required
-                                            ? '<span style="color:#7A2E2E">*</span>'
-                                            : ""
-                                    }
-                                </label>
+                        param => {
+                            const options = extractParamOptions(param);
+                            return `
+                            <div class="param-field-block">
+                                <div class="flex items-center justify-between mb-1.5">
+                                    <label
+                                        class="text-[11px] font-bold block"
+                                        style="color:#55585F"
+                                    >
+                                        ${param.name}
+                                        ${
+                                            param.required
+                                                ? '<span style="color:#7A2E2E">*</span>'
+                                                : ""
+                                        }
+                                    </label>
+                                    ${options ? `
+                                        <span class="param-badge-type">
+                                            <i class="fa-solid fa-layer-group text-[9px]"></i>
+                                            PILIHAN
+                                        </span>
+                                    ` : ""}
+                                </div>
 
                                 <input
                                     type="text"
@@ -891,8 +963,32 @@ function renderEndpointCard(route, id) {
                                     }"
                                     class="clay-input"
                                 >
+
+                                ${options ? `
+                                    <div class="param-options-container">
+                                        <div class="param-options-label">
+                                            <i class="fa-solid fa-list-check text-[10px]" style="color:var(--accent)"></i>
+                                            <span>Pilihan Cepat (Klik untuk mengisi):</span>
+                                        </div>
+                                        <div class="param-options-wrap" id="options-${id}-${param.name}">
+                                            ${options.map(opt => `
+                                                <button
+                                                    type="button"
+                                                    class="param-option-chip"
+                                                    data-input-id="input-${id}-${param.name}"
+                                                    data-value="${opt}"
+                                                    onclick="selectParamOption(this, 'input-${id}-${param.name}', '${opt}')"
+                                                >
+                                                    <span class="chip-dot"></span>
+                                                    <span class="chip-text">${opt}</span>
+                                                </button>
+                                            `).join('')}
+                                        </div>
+                                    </div>
+                                ` : ""}
                             </div>
-                        `
+                        `;
+                        }
                     )
                     .join("")}
             </div>
@@ -1034,6 +1130,7 @@ function renderEndpointCard(route, id) {
             </div>
         </div>
     `;
+    bindParamOptionsSync(ev);
 }
 
 function setupSidebarEvents() {
@@ -1212,6 +1309,10 @@ window.reset = id => {
         .forEach(input => {
             input.value = "";
         });
+
+    document
+        .querySelectorAll(`[id^="options-${id}-"] .param-option-chip`)
+        .forEach(chip => chip.classList.remove("active"));
 
     document.getElementById(`status-dot-${id}`).className =
         "status-dot status-waiting";

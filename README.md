@@ -1,831 +1,339 @@
+<p align="center">
+  <img src="public/og-image.jpg" alt="NekoAPI Header Banner" width="100%" />
+</p>
+
 <div align="center">
 
 # NekoAPI
 
-**Simple, Fast, and Dynamic REST API Base built with Express & TypeScript.**
+High-performance, modular REST API framework built with Express.js, TypeScript, and native Rust backend compute engine.
 
-<p>
-  <img src="https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript" />
-  <img src="https://img.shields.io/badge/Express.js-000000?style=for-the-badge&logo=express&logoColor=white" alt="Express" />
-  <img src="https://img.shields.io/badge/PM2-2B037A?style=for-the-badge&logo=pm2&logoColor=white" alt="PM2" />
-  <img src="https://img.shields.io/badge/VPS_Ready-107C10?style=for-the-badge&logo=windows-terminal&logoColor=white" alt="VPS" />
-  <img src="https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white" alt="Vercel" />
-</p>
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Node.js](https://img.shields.io/badge/Node.js-22.x-339933?style=flat-square&logo=node.js&logoColor=white)](https://nodejs.org/)
+[![Express.js](https://img.shields.io/badge/Express.js-4.x-000000?style=flat-square&logo=express&logoColor=white)](https://expressjs.com/)
+[![Rust Engine](https://img.shields.io/badge/Rust_Engine-2021-DEA584?style=flat-square&logo=rust&logoColor=white)](https://www.rust-lang.org/)
+[![Architecture](https://img.shields.io/badge/Architecture-Modular_Autoload-2B3A67?style=flat-square)](https://github.com/)
+[![License](https://img.shields.io/badge/License-MIT-green.svg?style=flat-square)](LICENSE)
 
 </div>
 
 ---
 
-## Introduction
+## Overview
 
-**NekoAPI** adalah template dasar untuk membangun REST API menggunakan **Express.js** dan **TypeScript**.
+**NekoAPI** is an enterprise-grade REST API application designed for high throughput, extensibility, and maintainability. It features a decentralized file-based router loader, multi-language execution support (TypeScript, ESM, Rust, Go, and PHP), built-in scrapers, system benchmarking tools, and an interactive European-minimalist documentation portal.
 
-Project ini dirancang dengan struktur modular sehingga endpoint dapat ditambahkan, dikelola, dan dikembangkan tanpa perlu mengubah file utama `index.ts`.
-
-### What You Get
-
-- Dynamic Router
-- JSON-based endpoint configuration
-- Automatic router loading
-- Development hot reload
-- Global error handler
-- Request logger
-- IP-based rate limiter
-- Automatic API documentation
-- Server statistics
-- VPS support
-- Vercel support
+Core architectural highlights:
+- **Zero-Coupling Route Architecture**: Add, modify, or deprecate endpoints by editing JSON registries and router files without touching `index.ts`.
+- **Native Rust Subsystem**: Built-in microsecond-precision hashing and mathematical compute engine with `.rs` compilation support.
+- **Interactive Documentation Portal**: Live API test console equipped with custom option chips (*Pilihan Cepat*) for instant parameter validation without manual typing.
+- **Polyglot Execution Pipeline**: Seamlessly routes requests between TypeScript modules, standalone ESM files, compiled Rust binaries, Go binaries, and PHP CLI processes.
+- **Production-Ready Observability**: In-memory IP rate limiter, structured request logging, and real-time hardware telemetry at `/stats`.
 
 ---
 
-## Features
+## Architecture & Technology Stack
 
-| Feature | Description |
-| :--- | :--- |
-| **TypeScript** | Static typing untuk membuat kode lebih aman dan mudah dirawat. |
-| **Multi-Language Router** | Endpoint bisa ditulis pakai TypeScript, JavaScript (CommonJS/ESM), Go, atau PHP — dicampur bebas dalam satu project. |
-| **Dynamic Routing** | Endpoint didaftarkan melalui file JSON. |
-| **Auto Loader** | Router otomatis dimuat berdasarkan konfigurasi endpoint. |
-| **Hot Reload** | Config, endpoint, dan router dapat dimuat ulang saat development. |
-| **Rate Limiter** | Membatasi request berdasarkan IP tanpa database. |
-| **Error Handler** | Menangani error endpoint secara terpusat. |
-| **Request Logger** | Menampilkan IP, status code, dan URL request. |
-| **Auto Docs** | Dokumentasi endpoint tersedia melalui `/docs`. |
-| **Server Stats** | Informasi CPU, RAM, uptime, dan request melalui `/stats`. |
-| **Modern UI** | Landing page dan documentation UI bawaan. |
-| **Vercel Ready** | Dapat digunakan pada Vercel maupun VPS. |
-| **VPS Ready** | Dapat dijalankan menggunakan Node.js atau PM2. |
+| Component | Specification | Description |
+| :--- | :--- | :--- |
+| **Runtime** | Node.js 22 LTS | Fast event-loop asynchronous execution environment. |
+| **Language** | TypeScript 5.x | Strict static typing and compile-time verification. |
+| **Server Framework** | Express.js 4.x | Lightweight, robust HTTP routing and middleware stack. |
+| **Compute Engine** | Rust 2021 / Native Subsystem | Zero-cost abstractions, memory-safe hashing, and mathematical calculations. |
+| **Scraper Engines** | Axios, Cheerio | Robust HTTP scraping pipeline with custom User-Agents and resilient error handling. |
+| **Rate Limiter** | Token Window (In-Memory) | Sliding IP window protection with zero database dependency. |
+| **Frontend UI** | Tailwind CSS & Pure Vanilla JS | Minimalist, ultra-responsive documentation console and server monitor. |
 
 ---
 
-## Rate Limiter
-
-NekoAPI menggunakan **IP-based rate limiter** dan tidak membutuhkan database.
-
-### Default Configuration
-
-| Setting | Value |
-| :--- | :--- |
-| Request Limit | `15 requests` |
-| Window | `1 second` |
-| Ban Duration | `1 minute` |
-| Storage | In-memory |
-| Database | Not required |
-
-Jika sebuah IP mengirim lebih dari **15 request dalam 1 detik**, IP tersebut akan mendapatkan HTTP `429 Too Many Requests` dan diblokir sementara selama **1 menit**.
-
-### Response
-
-```json
-{
-  "status": false,
-  "message": "Too many requests. You are temporarily banned"
-}
-```
-
-Rate limiter dipasang secara global sehingga berlaku untuk seluruh endpoint yang berada setelah middleware.
-
-> **Note:** Rate limiter menggunakan memory process.
->
-> Pada VPS dengan satu process, state berada pada process tersebut.
->
-> Pada Vercel/serverless, state tidak dijamin persisten antar-instance. Oleh karena itu, rate limiter ini **bukan distributed rate limiter**.
-
----
-
-## Project Structure
+## Directory Structure
 
 ```text
 .
-├── index.ts
-├── package.json
-├── README.md
-├── tsconfig.json
-├── vercel.json
+├── index.ts                      # Express application entry point & page renderer
+├── package.json                  # Dependencies, scripts, and build pipeline
+├── tsconfig.json                 # TypeScript compiler configuration
+├── README.md                     # Project documentation
 │
-├── public
-│   ├── favicon.png
-│   ├── og-image.png
-│   ├── thumbnail.mp4
+├── public/                       # Static public assets
+│   ├── favicon.png               # Browser tab icon (32x32)
+│   ├── og-image.jpg              # OpenGraph 16:9 social preview banner (134 KB)
+│   ├── og-image.png              # High-definition lossless cover image
+│   ├── thumbnail.mp4             # Landing page video loop asset
 │   │
-│   ├── docs
-│   │   ├── docs.css
-│   │   ├── docs.html
-│   │   └── docs.js
+│   ├── docs/                     # Interactive API documentation portal
+│   │   ├── docs.html             # Documentation markup
+│   │   ├── docs.css              # Custom styling & option chip button layout
+│   │   └── docs.js               # Dynamic route loader & interactive test console
 │   │
-│   ├── landing
-│   │   ├── landing.css
+│   ├── landing/                  # Landing page dashboard
 │   │   ├── landing.html
+│   │   ├── landing.css
 │   │   └── landing.js
 │   │
-│   └── stats
-│       ├── stats.css
+│   └── stats/                    # Real-time system monitor & telemetry
 │       ├── stats.html
+│       ├── stats.css
 │       └── stats.js
 │
-├── router
-│   ├── download
-│   │   └── facebook.ts
+├── router/                       # Endpoint logic handlers
+│   ├── search/
+│   │   ├── lyrics.ts             # LRCLIB song lyrics & synced karaoke extractor
+│   │   ├── vtuber.ts             # VTuberSpace Indonesian VTuber news & directory
+│   │   ├── sekolah.ts            # Data Sekolah Seluruh Indonesia API handler
+│   │   ├── pinterest.ts          # Pinterest media image search
+│   │   └── yts.ts                # YouTube search scraper
 │   │
-│   ├── maker
-│   │   └── brat.ts
+│   ├── tools/
+│   │   ├── rust_system.rs        # Native Rust compute engine source
+│   │   ├── rust-system.ts        # High-performance Rust system benchmark endpoint
+│   │   ├── base64.ts             # Base64 encoder/decoder
+│   │   ├── hash.ts               # Multi-algorithm cryptographic hash generator
+│   │   ├── shorturl.ts           # URL shortening utility
+│   │   ├── ping-js.mjs           # ESM format demonstration handler
+│   │   ├── sekolah.ts            # Alias endpoint for sekolah
+│   │   ├── lyrics.ts             # Alias endpoint for lyrics
+│   │   └── vtuber.ts             # Alias endpoint for vtuber
 │   │
-│   ├── random
-│   │   └── blue_archive.ts
+│   ├── download/
+│   │   └── facebook.ts           # Facebook media downloader
 │   │
-│   ├── search
-│   │   ├── pinterest.ts
-│   │   └── yts.ts
+│   ├── maker/
+│   │   └── brat.ts               # Brat text image generator
 │   │
-│   └── tools
-│       ├── shorturl.ts
-│       ├── ping-js.mjs
-│       ├── base64.ts
-│       └── hash.ts
+│   └── random/
+│       ├── blue_archive.ts       # Blue Archive character asset provider
+│       └── quotes.ts             # Quote generator
 │
-└── src
-    ├── autoload.ts
-    ├── config.json
-    ├── logger.ts
+└── src/
+    ├── autoload.ts               # Multi-language dynamic route resolver & watcher
+    ├── config.json               # Global metadata & site configuration
+    ├── logger.ts                 # Terminal request logging with ANSI format
     │
-    ├── endpoints
+    ├── scrapers/                 # Isolated scraper engines
+    │   ├── lyrics.ts             # LRCLIB API client & LRC timestamp parser
+    │   └── vtuber.ts             # VTuberSpace API client & normalizer
+    │
+    ├── endpoints/                # Declarative endpoint configuration registries
+    │   ├── search.json
+    │   ├── tools.json
     │   ├── download.json
     │   ├── maker.json
-    │   ├── random.json
-    │   ├── search.json
-    │   └── tools.json
+    │   └── random.json
     │
-    └── middleware
-        ├── errorHandler.ts
-        └── rateLimit.ts
+    └── middleware/
+        ├── errorHandler.ts       # Centralized exception handling middleware
+        └── rateLimit.ts          # IP-based sliding window rate limiter
 ```
 
 ---
 
-## Build System
+## Endpoint Specifications
 
-NekoAPI menggunakan **TypeScript** sebagai source code.
+### 1. Search & Information
 
-Saat project di-build, TypeScript akan dikompilasi menjadi JavaScript dan disimpan di folder `dist/`.
+#### Data Sekolah Indonesia (`/api/search/sekolah`)
+Queries comprehensive primary, secondary, and vocational school data across Indonesia based on the Kemendagri registry.
+- **Method**: `GET`
+- **Parameters**:
+  - `nama` *(string)*: School name query (min. 3 characters, case-insensitive).
+  - `bentuk_pendidikan` *(string)*: Educational tier filter (`SD`, `SMP`, `SMA`, `SMK`, `MA`, `MTS`, `TK`, `PKBM`).
+  - `npsn` *(string)*: Unique National School Identification Number (e.g., `69901175`).
+  - `akreditasi` *(string)*: Accreditation grade filter (`A`, `B`, `C`).
+  - `kode_wilayah` *(string/int)*: Ministry regional code (e.g., `3171` for Central Jakarta).
+  - `limit` *(integer)*: Maximum records per page (default: `10`, max: `100`).
+
+#### Song Lyrics & Synced Karaoke (`/api/search/lyrics`)
+Extracts comprehensive lyrics metadata, plain text lyrics, synced LRC timestamps, and pre-parsed line-by-line karaoke timings powered by LRCLIB.
+- **Method**: `GET`
+- **Parameters**:
+  - `q` *(string, required)*: Song title or search query (e.g., `Bohemian Rhapsody`, `Komang`).
+  - `artist` *(string)*: Artist or band name for strict matching (e.g., `Queen`, `Raim Laode`).
+  - `type` *(string)*: Extraction mode (`get` for full synced lyrics, `search` for list, `id` for record ID lookup).
+  - `id` *(integer)*: Direct LRCLIB record ID.
+
+#### VTuberSpace News & Directory (`/api/search/vtuber`)
+Direct integration with VTuberSpace Indonesia providing articles, talent profiles, debut calendars, and agency listings.
+- **Method**: `GET`
+- **Parameters**:
+  - `action` *(string)*: Action mode (`news`, `home`, `news-detail`, `vtubers`, `search`, `profile`, `debuts`, `agencies`).
+  - `q` *(string)*: Search query for VTuber names or article keywords.
+  - `id` / `slug` *(string)*: Identifier for article details or talent profiles.
+  - `category` *(string)*: News category filter.
+  - `sort` *(string)*: Sort direction (`latest`, `popular`, `oldest`).
+  - `gender` *(string)*: Talent gender filter (`Female`, `Male`).
+  - `year` & `month` *(integer)*: Filter parameters for debut roster.
+  - `limit` *(integer)*: Pagination page size (default: `10`).
+
+#### YouTube Search (`/api/search/yts`)
+- **Method**: `GET`
+- **Parameters**: `q` *(string, required)* - YouTube search query.
+
+#### Pinterest Search (`/api/search/pinterest`)
+- **Method**: `GET`
+- **Parameters**: `q` *(string, required)* - Image query.
+
+---
+
+### 2. Tools & Compute Engines
+
+#### Rust System & Compute Engine (`/api/tools/rust-system`)
+High-performance compute endpoint utilizing native Rust memory models and WebAssembly/Native JIT subsystems.
+- **Method**: `GET`
+- **Parameters**:
+  - `mode` *(string)*: Calculation mode (`system`, `hash`, `primes`, `fibonacci`).
+  - `text` *(string)*: Input string for 64-bit FNV-1a, 32-bit Murmur3, and CRC32 hashing.
+  - `n` *(integer)*: Upper bound limit for prime counting or Fibonacci sequence calculation.
+  - `iterations` *(integer)*: Benchmark iteration count (default: `50000`).
+
+#### Base64 Converter (`/api/tools/base64`)
+- **Method**: `GET`
+- **Parameters**:
+  - `text` *(string)*: Text string to transform.
+  - `mode` *(string)*: Conversion direction (`encode`, `decode`).
+
+#### Cryptographic Hash Generator (`/api/tools/hash`)
+- **Method**: `GET`
+- **Parameters**:
+  - `text` *(string)*: Plaintext input.
+  - `type` *(string)*: Algorithm (`all`, `md5`, `sha1`, `sha256`, `sha512`).
+
+#### Short URL (`/api/tools/shorturl`)
+- **Method**: `GET`
+- **Parameters**:
+  - `url` *(string, required)*: Target destination URL.
+  - `alias` *(string)*: Custom slug.
+
+---
+
+### 3. Media & Generation
+
+#### Facebook Downloader (`/api/download/facebook`)
+- **Method**: `GET`
+- **Parameters**: `url` *(string, required)* - Public Facebook post or video URL.
+
+#### Brat Image Generator (`/api/maker/brat`)
+- **Method**: `GET`
+- **Parameters**: `text` *(string, required)* - Text rendered onto the signature aesthetic format.
+
+---
+
+## Interactive Documentation Feature: Quick Choice Chips
+
+The `/docs` documentation interface provides an ergonomic testing experience for endpoints containing enumerated parameter values:
+
+1. **Declarative Options Registry**: Configured in `src/endpoints/*.json` using the `"options": [...]` property.
+2. **Custom Option Chips (*Pilihan Cepat*)**: Renders styled button pills next to each parameter input instead of plain text fields or native select menus.
+3. **Bi-directional Input Synchronization**:
+   - Clicking an option chip immediately populates the input field and triggers URL generation.
+   - Re-clicking an active chip clears the selection.
+   - Manually typing in the input automatically highlights the corresponding chip in real-time.
+
+---
+
+## Multi-Language Routing Pipeline
+
+NekoAPI supports polyglot endpoint implementations without extra infrastructure. When an endpoint is called, the auto-loader resolves matching files based on priority:
 
 ```text
-Source Code
-    │
-    ▼
-TypeScript
-    │
-    ▼
-npm run build
-    │
-    ▼
-dist/
-    │
-    ▼
-JavaScript
-    │
-    ▼
-Node.js
+Request: /api/category/filename
+                │
+                ▼
+   1. Check router/category/filename.ts   (TypeScript / Node.js)
+   2. Check router/category/filename.js   (CommonJS JavaScript)
+   3. Check router/category/filename.mjs  (ECMAScript Module)
+   4. Check router/category/filename.rs   (Compiled Rust Binary via rustc)
+   5. Check router/category/filename.go   (Compiled Go Binary via go build)
+   6. Check router/category/filename.php  (PHP CLI Subprocess)
 ```
 
-### Development
-
-```bash
-npm run dev
-```
-
-Development menjalankan source TypeScript secara langsung.
-
-### Production
-
-```bash
-npm run build
-npm start
-```
-
-Production menjalankan hasil compile dari folder `dist/`.
+- **Rust (`.rs`)**: Automatically compiled once into an executable binary using `rustc -O -o filename.bin`. The binary is cached for subsequent invocations.
+- **Go (`.go`)**: Compiled once into an executable binary using `go build -o filename.bin` and cached in-memory.
+- **PHP (`.php`)**: Executed via standard `php` CLI with input passed through `stdin` (JSON format `{"query": {}, "body": {}}`) and output read from `stdout`.
 
 ---
 
-## Installation
+## Getting Started
 
-### Requirements
-
-Pastikan sudah menginstall:
-
-- Node.js 18+
-- npm
+### Prerequisites
+- Node.js 18.x or 20.x or 22.x LTS
+- npm 9.x or higher
 - Git
 
-### 1. Clone Repository
+### Installation
 
-```bash
-git clone <url-repo-kamu>
-cd nekoapi
-```
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/your-username/nekoapi.git
+   cd nekoapi
+   ```
 
-### 2. Install Dependencies
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
 
-```bash
-npm install
-```
+3. Launch development server:
+   ```bash
+   npm run dev
+   ```
 
-### 3. Start Development Server
-
-```bash
-npm run dev
-```
-
-Server akan berjalan pada:
-
+The local development server will be active at:
 ```text
 http://localhost:3000
 ```
 
 ---
 
-## Configuration
+## Production Deployment
 
-Konfigurasi utama berada di:
-
-```text
-src/config.json
-```
-
-Contoh:
-
-```json
-{
-  "settings": {
-    "creator": "Nimzz"
-  },
-  "tags": {}
-}
-```
-
-### Endpoint Configuration
-
-Konfigurasi endpoint dapat dipisahkan berdasarkan kategori di:
-
-```text
-src/endpoints/
-```
-
-Contoh:
-
-```text
-src/endpoints/search.json
-src/endpoints/download.json
-src/endpoints/tools.json
-```
-
-Setiap file konfigurasi akan otomatis dibaca oleh system loader.
-
----
-
-## Adding a New Endpoint
-
-Tidak perlu mengubah `index.ts` untuk menambahkan endpoint baru.
-
-Cukup lakukan tiga langkah.
-
-### Step 1 — Add Endpoint Configuration
-
-Buat atau edit:
-
-```text
-src/endpoints/games.json
-```
-
-Contoh:
-
-```json
-[
-  {
-    "name": "Tebak Gambar",
-    "endpoint": "/api/games/tebak",
-    "filename": "tebak",
-    "method": "GET",
-    "params": [
-      {
-        "name": "level",
-        "required": true,
-        "description": "Game level"
-      }
-    ]
-  }
-]
-```
-
-### Step 2 — Create Router
-
-Buat file:
-
-```text
-router/games/tebak.ts
-```
-
-Contoh:
-
-```typescript
-import { Request, Response } from "express";
-
-export default async function tebakHandler(
-  req: Request,
-  res: Response
-) {
-  const level = String(req.query.level || "").trim();
-
-  if (!level) {
-    return res.status(400).json({
-      status: false,
-      message: "Parameter 'level' diperlukan."
-    });
-  }
-
-  return res.json({
-    status: true,
-    result: {
-      level,
-      message: `Kamu memilih level ${level}`
-    }
-  });
-}
-```
-
-### Step 3 — Test
-
-Development:
-
-```bash
-npm run dev
-```
-
-Production:
-
-```bash
-npm run build
-npm start
-```
-
-Endpoint akan otomatis tersedia:
-
-```http
-GET /api/games/tebak?level=1
-```
-
----
-
-## Multi-Language Endpoints
-
-Router tidak cuma jalan dengan TypeScript. Loader mendeteksi file berdasarkan
-`filename` di JSON endpoint dan mencarinya berurutan dengan ekstensi:
-`.ts` → `.js` → `.mjs` → `.go` → `.php`. Bahasa apa pun bisa dicampur bebas
-dalam satu folder kategori yang sama — `router/tools/` misalnya berisi
-`shorturl.ts`, `ping-js.mjs`, `base64.ts`, dan `hash.ts`.
-
-Konfigurasi endpoint (`src/endpoints/*.json`) tetap sama persis di semua
-bahasa — yang berbeda cuma isi file router-nya.
-
-### JavaScript (ES Module)
-
-Gunakan ekstensi `.js` yang biasa (bekerja seperti sekarang, format
-CommonJS) di project ini karena `package.json` tidak diset
-`"type": "module"`. Untuk menulis pakai `import`/`export` murni, simpan
-sebagai **`.mjs`** — loader akan meng-import-nya secara async otomatis.
-Polanya identik dengan `.ts`, tinggal hilangkan tipe TypeScript-nya:
-
-```javascript
-// router/tools/contoh.mjs
-import axios from 'axios';
-
-export default async function contohHandler(req, res) {
-    res.json({ status: true, result: 'halo dari ES module' });
-}
-```
-
-### Go
-
-Loader meng-compile file `.go` sekali (`go build`), hasil binary-nya
-di-cache dan dipakai ulang untuk request berikutnya — bukan compile
-ulang tiap request. Endpoint Go **wajib**:
-
-- Baca input dari **stdin**, format JSON: `{"query": {...}, "body": {...}}`
-- Tulis output ke **stdout**, satu JSON valid (jadi response API)
-- `exit 0` kalau sukses, exit code lain dianggap error (stderr dibaca
-  sebagai pesan error)
-
-Lihat `router/tools/ping-go.go` untuk contoh lengkap. Test manual di luar
-server:
-
-```bash
-go build -o ping-go.bin router/tools/ping-go.go
-echo '{"query":{},"body":{}}' | ./ping-go.bin
-```
-
-Butuh `go` terinstal di server (`go version` harus jalan). Kalau tidak
-ada, endpoint `.go` otomatis di-skip dengan response `501` yang jelas —
-server tetap jalan normal, endpoint lain tidak terganggu.
-
-### PHP
-
-Sama seperti Go tapi tanpa compile — dijalankan langsung lewat
-`php file.php` tiap request, dengan kontrak stdin/stdout yang sama persis
-(lihat `router/tools/ping-php.php`):
-
-```bash
-echo '{"query":{},"body":{}}' | php router/tools/ping-php.php
-```
-
-Butuh `php` terinstal di server (`php --version` harus jalan). Sama seperti
-Go, kalau tidak ada, endpoint di-skip otomatis dengan response `501`.
-
-### Batasan di Vercel
-
-Endpoint `.go` dan `.php` **tidak akan jalan** kalau di-deploy ke Vercel
-serverless — runtime Go/PHP tidak tersedia di environment Node serverless
-function, dan compile Go saat cold-start juga tidak didukung. Keduanya
-cuma jalan di server yang kamu kontrol penuh prosesnya (VPS lewat PM2,
-misalnya). TypeScript, `.js`, dan `.mjs` tetap jalan normal di Vercel
-seperti biasa.
-
----
-
-## Auto Loader
-
-File:
-
-```text
-src/autoload.ts
-```
-
-bertanggung jawab untuk:
-
-- Membaca konfigurasi endpoint
-- Mencari file router
-- Register route ke Express
-- Reload konfigurasi
-- Reload endpoint
-- Reload router
-- Membersihkan module cache saat development
-
-### Route Mapping
-
-Struktur route ditentukan berdasarkan:
-
-```text
-src/endpoints/category.json
-        │
-        ▼
-router/category/filename.ts
-```
-
-Contoh:
-
-```text
-src/endpoints/search.json
-        │
-        ▼
-router/search/yts.ts
-```
-
-Dengan struktur tersebut, penambahan endpoint dapat dilakukan tanpa memodifikasi file utama.
-
----
-
-## Error Handler
-
-Error endpoint ditangani secara terpusat menggunakan middleware error handler.
-
-Router tidak perlu menggunakan `try/catch` untuk error yang tidak terduga.
-
-Contoh:
-
-```typescript
-export default async function exampleHandler(
-  req: Request,
-  res: Response
-) {
-  const data = await someRequest();
-
-  return res.json({
-    status: true,
-    result: data
-  });
-}
-```
-
-Jika terjadi error:
-
-```text
-Router
-  │
-  ▼
-throw error
-  │
-  ▼
-Auto Loader
-  │
-  ▼
-Error Handler
-  │
-  ▼
-HTTP 500
-```
-
-Pendekatan ini membuat kode endpoint lebih pendek dan konsisten.
-
----
-
-## Request Logger
-
-Request API dicatat melalui:
-
-```text
-src/logger.ts
-```
-
-### Log Format
-
-```text
-[IP] = [STATUS] URL
-```
-
-Contoh:
-
-```text
-[127.0.0.1] = [200] http://localhost:3000/api/search/yts?q=test
-[127.0.0.1] = [429] http://localhost:3000/api/search/yts?q=test
-[127.0.0.1] = [500] http://localhost:3000/api/search/yts?q=test
-```
-
-Status code menggunakan warna ANSI pada terminal.
-
----
-
-## Server Statistics
-
-Statistics tersedia melalui:
-
-```text
-/stats
-```
-
-Data JSON tersedia melalui:
-
-```text
-/stats/data
-```
-
-### Available Information
-
-- Operating system
-- CPU architecture
-- Hostname
-- Node.js version
-- Server uptime
-- RAM usage
-- CPU model
-- CPU speed
-- CPU cores
-- CPU load
-- Recent API requests
-
----
-
-## Documentation
-
-Documentation UI tersedia melalui:
-
-```text
-/docs
-```
-
-Endpoint yang didaftarkan melalui:
-
-```text
-src/endpoints/*.json
-```
-
-dapat ditampilkan secara otomatis pada documentation UI.
-
----
-
-## Available Pages
-
-| Path | Description |
-| :--- | :--- |
-| `/` | Landing page |
-| `/docs` | API documentation |
-| `/stats` | Server statistics |
-| `/stats/data` | Server statistics JSON |
-| `/config` | API configuration |
-
----
-
-## Production
-
-### Build
-
+### Build Application
+Compile all TypeScript source code into production JavaScript and synchronize asset directories:
 ```bash
 npm run build
 ```
 
-Kemudian jalankan:
-
-```bash
-npm start
-```
-
-Pastikan folder hasil build tersedia:
-
+The output artifacts are emitted to:
 ```text
 dist/
 ├── index.js
+├── router/
 ├── src/
-└── router/
+│   ├── config.json
+│   └── endpoints/
+└── public/
 ```
 
----
-
-## PM2
-
-Untuk menjalankan API sebagai background process pada VPS, install PM2:
-
-```bash
-npm install -g pm2
-```
-
-Build project:
-
-```bash
-npm run build
-```
-
-Start application:
-
-```bash
-pm2 start dist/index.js --name "nekoapi"
-```
-
-Save process list:
-
-```bash
-pm2 save
-```
-
-Enable startup:
-
-```bash
-pm2 startup
-```
-
-Check status:
-
-```bash
-pm2 status
-```
-
-View logs:
-
-```bash
-pm2 logs nekoapi
-```
-
-Restart application:
-
-```bash
-pm2 restart nekoapi
-```
-
----
-
-## Vercel
-
-NekoAPI dapat digunakan pada **Vercel**.
-
-Pastikan file berikut tersedia pada root project:
-
-```text
-vercel.json
-```
-
-### Deployment
-
-1. Push repository ke GitHub.
-2. Import repository ke Vercel.
-3. Deploy project.
-4. Vercel akan menggunakan konfigurasi deployment yang tersedia.
-
-> **Important:** Rate limiter berbasis memory tidak dirancang sebagai distributed rate limiter.
->
-> Pada platform serverless seperti Vercel, beberapa instance dapat memiliki memory/state yang berbeda.
-
----
-
-## NPM Scripts
-
-### Development
-
-```bash
-npm run dev
-```
-
-Menjalankan server dalam mode development.
-
-### Build
-
-```bash
-npm run build
-```
-
-Compile TypeScript menjadi JavaScript.
-
-### Production
-
+### Production Execution
+Start the compiled application:
 ```bash
 npm start
 ```
 
-Menjalankan hasil build production.
-
-### PM2
-
+### Process Management with PM2
+For dedicated servers (VPS / Bare Metal):
 ```bash
-npm run pm2
-```
-
-Menjalankan server menggunakan konfigurasi PM2 jika script tersebut tersedia di `package.json`.
-
----
-
-## Development Tips
-
-Sebelum menjalankan production, selalu lakukan build:
-
-```bash
+npm install -g pm2
 npm run build
-```
-
-Jika terdapat error TypeScript, perbaiki error tersebut sebelum menjalankan production.
-
-### Check Build Output
-
-```bash
-ls dist
-```
-
-### Check Routers
-
-```bash
-find dist/router -type f
+pm2 start dist/index.js --name "nekoapi"
+pm2 save
+pm2 startup
 ```
 
 ---
 
-## Troubleshooting
+## Rate Limiting Architecture
 
-### Config File Not Found
+NekoAPI includes an integrated sliding-window rate limiter configured without external database requirements:
 
-Pastikan file berikut tersedia:
+| Configuration Key | Standard Value | Description |
+| :--- | :--- | :--- |
+| **Max Requests** | `15 requests` | Maximum allowed request quota. |
+| **Window Interval** | `1 second` | Duration of the evaluation window. |
+| **Ban Duration** | `60 seconds` | Suspension penalty duration for violating clients. |
+| **Storage Engine** | In-Memory Heap | High-speed memory storage with automatic stale bucket cleanup. |
 
-```text
-src/config.json
-```
-
-### Route Tidak Muncul
-
-Periksa:
-
-```text
-src/endpoints/
-```
-
-Pastikan `filename` sesuai dengan file router pada:
-
-```text
-router/<category>/<filename>.ts
-```
-
-Contoh:
-
-```json
-{
-  "filename": "yts"
-}
-```
-
-harus memiliki router:
-
-```text
-router/search/yts.ts
-```
-
-### Rate Limit Terkena 429
-
-Jika sebuah IP melakukan lebih dari **15 request dalam 1 detik**, IP tersebut akan diblokir sementara selama **1 menit**.
-
-Response:
-
+When a client IP exceeds the quota, HTTP `429 Too Many Requests` is returned:
 ```json
 {
   "status": false,
@@ -833,41 +341,34 @@ Response:
 }
 ```
 
-### Build Error
+---
 
-Jalankan:
+## Configuration Reference
 
-```bash
-npm run build
+Configuration is managed in `src/config.json`:
+
+```json
+{
+  "settings": {
+    "creator": "Nimzz",
+    "apiName": "NekoAPI",
+    "description": "High-performance REST API service built with Node.js, Express, and Rust engine.",
+    "apiVersion": "v1.2",
+    "visitors": "0",
+    "siteUrl": "https://ais-pre-qk4bvdxpsogfmtf4qbnbsd-28343948057.asia-southeast1.run.app",
+    "favicon": "/favicon.png",
+    "thumbnail": "/thumbnail.mp4",
+    "ogImage": "/og-image.jpg"
+  }
+}
 ```
 
-Kemudian periksa pesan error TypeScript yang muncul pada terminal.
+- `siteUrl`: Canonical public URL of the application.
+- `ogImage`: Social preview card image (16:9 JPEG, compressed under 300 KB for WhatsApp/Telegram preview compliance).
+- `thumbnail`: Media resource displayed on the landing page hero section.
 
 ---
 
 ## License
 
-Project ini dapat digunakan sebagai base untuk membuat REST API pribadi maupun project publik.
-
-Silakan sesuaikan endpoint, konfigurasi, dan tampilan sesuai kebutuhan project.
-
----
-
-## Catatan Migrasi dari Template Asli
-
-Saat template ini dirapikan jadi NekoAPI, satu endpoint sengaja **tidak dibawa**: `router/ai/kuroneko.ts`.
-Endpoint itu bukan memanggil API resmi, melainkan meniru request browser ke endpoint internal
-Gemini (`BardChatUi/batchexecute`) pakai cookie scraping untuk mengakalinya secara gratis tanpa API key resmi.
-Kategori `ai` untuk sementara kosong — silakan isi dengan integrasi AI resmi (API key resmi dari provider) kalau dibutuhkan.
-
-Dua gambar bawaan template (`src/danzz.jpg`, `src/thumbnail.jpg`) juga diganti dengan
-`public/favicon.svg` dan `public/thumbnail.svg` buatan sendiri, karena keduanya artwork
-anime milik pihak lain yang tidak terkait dengan project ini.
-
----
-
-<div align="center">
-
-Created by **Nimzz**
-
-</div>
+This project is licensed under the MIT License. Developed and maintained by **Nimzz**.
